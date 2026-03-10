@@ -1,6 +1,6 @@
 'use client';
 import { useState, useRef } from 'react';
-import type { DreamAnalysis } from '../page';
+import type { DreamAnalysis, AppSettings } from '../page';
 
 declare global {
   interface Window {
@@ -8,8 +8,6 @@ declare global {
     webkitSpeechRecognition: any;
   }
 }
-
-import type { AppSettings } from '../page';
 
 const BACKEND_URL = 'https://dreameeer-backend-production.up.railway.app';
 
@@ -24,9 +22,6 @@ const tx = {
     button: '🔮 Расшифровать сон',
     error: 'Нет соединения с сервером. Проверь подключение.',
     minChars: 'Расскажи сон подробнее (минимум 10 символов)',
-    promptsLabel: 'Попробуй рассказать о...',
-    prompts: ['✈️ Полёт', '🌊 Вода', '👁️ Преследование', '🏠 Дом', '💀 Смерть'],
-    chips: ['🧠 GPT-5.2', '🎬 Видео AI', '🔮 Юнг + Фрейд'],
   },
   en: {
     subtitle: 'Tell me your dream',
@@ -38,9 +33,6 @@ const tx = {
     button: '🔮 Interpret Dream',
     error: 'No server connection. Check your network.',
     minChars: 'Tell the dream in more detail (min 10 characters)',
-    promptsLabel: 'Try telling about...',
-    prompts: ['✈️ Flying', '🌊 Water', '👁️ Chase', '🏠 Home', '💀 Death'],
-    chips: ['🧠 GPT-5.2', '🎬 Video AI', '🔮 Jung + Freud'],
   },
 };
 
@@ -50,8 +42,7 @@ interface Props {
 }
 
 export default function HomeScreen({ onAnalysisComplete, settings }: Props) {
-  const lang = settings.language;
-  const s = tx[lang];
+  const s = tx[settings.language];
   const [dreamText, setDreamText] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -85,15 +76,8 @@ export default function HomeScreen({ onAnalysisComplete, settings }: Props) {
       setInterimText(interim);
     };
 
-    recognition.onerror = () => {
-      setIsRecording(false);
-      setInterimText('');
-    };
-
-    recognition.onend = () => {
-      setIsRecording(false);
-      setInterimText('');
-    };
+    recognition.onerror = () => { setIsRecording(false); setInterimText(''); };
+    recognition.onend = () => { setIsRecording(false); setInterimText(''); };
 
     recognitionRef.current = recognition;
     recognition.start();
@@ -109,10 +93,7 @@ export default function HomeScreen({ onAnalysisComplete, settings }: Props) {
 
   const analyze = async () => {
     const text = dreamText.trim();
-    if (text.length < 10) {
-      setError(s.minChars);
-      return;
-    }
+    if (text.length < 10) { setError(s.minChars); return; }
     setIsLoading(true);
     setError('');
 
@@ -120,21 +101,20 @@ export default function HomeScreen({ onAnalysisComplete, settings }: Props) {
       const res = await fetch(`${BACKEND_URL}/api/dream/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ dreamText: text, theme: settings.theme, mode: settings.interpretMode, language: settings.language }),
+        body: JSON.stringify({
+          dreamText: text,
+          theme: settings.theme,
+          mode: settings.interpretMode,
+          language: settings.language,
+        }),
       });
 
       if (!res.ok) throw new Error(`Ошибка сервера: ${res.status}`);
       const data = await res.json();
-
       if (!data.success) throw new Error(data.error || 'Неизвестная ошибка');
-
       onAnalysisComplete(text, data.analysis, data.videoTaskId || null, data.imageUrl || null);
     } catch (e: any) {
-      if (e.message.includes('fetch') || e.message.includes('Failed')) {
-        setError(s.error);
-      } else {
-        setError(e.message);
-      }
+      setError(e.message.includes('fetch') || e.message.includes('Failed') ? s.error : e.message);
     } finally {
       setIsLoading(false);
     }
@@ -148,32 +128,20 @@ export default function HomeScreen({ onAnalysisComplete, settings }: Props) {
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '36px' }}>
         <div style={{
-          fontSize: '52px',
-          marginBottom: '12px',
-          animation: 'float 4s ease-in-out infinite',
-          display: 'inline-block',
+          fontSize: '52px', marginBottom: '12px',
+          animation: 'float 4s ease-in-out infinite', display: 'inline-block',
           filter: 'drop-shadow(0 0 20px rgba(167, 139, 250, 0.5))',
-        }}>
-          🌙
-        </div>
-        <h1 style={{
-          fontSize: '28px',
-          fontWeight: '800',
-          letterSpacing: '-0.5px',
-          marginBottom: '8px',
-        }} className="gradient-text">
-          Dreameeer
-        </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '15px' }}>
-          {s.subtitle}
-        </p>
+        }}>🌙</div>
+        <h1 style={{ fontSize: '28px', fontWeight: '800', letterSpacing: '-0.5px', marginBottom: '8px' }}
+          className="gradient-text">Dreameeer</h1>
+        <p style={{ color: 'var(--text-muted)', fontSize: '15px' }}>{s.subtitle}</p>
       </div>
 
       {/* Input card */}
       <div className="card" style={{ padding: '20px', marginBottom: '16px' }}>
         <textarea
           className="dream-textarea"
-          value={dreamText + (interimText ? interimText : '')}
+          value={dreamText + (interimText || '')}
           onChange={e => setDreamText(e.target.value)}
           placeholder={s.placeholder}
           rows={7}
@@ -181,20 +149,10 @@ export default function HomeScreen({ onAnalysisComplete, settings }: Props) {
           readOnly={isRecording}
         />
 
-        {/* Char count + voice button */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginTop: '14px',
-        }}>
-          <span style={{
-            fontSize: '13px',
-            color: charCount >= 10 ? 'var(--text-muted)' : 'var(--text-dim)',
-          }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '14px' }}>
+          <span style={{ fontSize: '13px', color: charCount >= 10 ? 'var(--text-muted)' : 'var(--text-dim)' }}>
             {charCount} {s.chars}{charCount < 10 && charCount > 0 ? ` (${s.charsLeft(10 - charCount)})` : ''}
           </span>
-
           <button
             className={`mic-btn ${isRecording ? 'recording' : 'idle'}`}
             style={{ width: '52px', height: '52px' }}
@@ -214,116 +172,40 @@ export default function HomeScreen({ onAnalysisComplete, settings }: Props) {
           </button>
         </div>
 
-        {/* Recording indicator */}
         {isRecording && (
           <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            marginTop: '12px',
-            padding: '10px 14px',
-            background: 'rgba(236, 72, 153, 0.1)',
-            borderRadius: '12px',
-            border: '1px solid rgba(236, 72, 153, 0.25)',
+            display: 'flex', alignItems: 'center', gap: '8px', marginTop: '12px',
+            padding: '10px 14px', background: 'rgba(236, 72, 153, 0.1)',
+            borderRadius: '12px', border: '1px solid rgba(236, 72, 153, 0.25)',
           }}>
-            <div style={{
-              width: '8px', height: '8px', borderRadius: '50%',
-              background: '#ec4899',
-              animation: 'pulse 1s ease-in-out infinite',
-            }} />
-            <span style={{ fontSize: '14px', color: '#f9a8d4' }}>
-              {s.listening}
-            </span>
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ec4899', animation: 'pulse 1s ease-in-out infinite' }} />
+            <span style={{ fontSize: '14px', color: '#f9a8d4' }}>{s.listening}</span>
           </div>
         )}
       </div>
 
-      {/* Quick prompts */}
-      {dreamText.length === 0 && (
-        <div style={{ marginBottom: '20px' }}>
-          <p style={{ fontSize: '12px', color: 'var(--text-dim)', marginBottom: '10px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-            {s.promptsLabel}
-          </p>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            {s.prompts.map(prompt => (
-              <button
-                key={prompt}
-                onClick={() => setDreamText(`Мне приснилось: ${prompt.split(' ')[1].toLowerCase()}`)}
-                style={{
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid var(--border-subtle)',
-                  borderRadius: '100px',
-                  padding: '7px 14px',
-                  color: 'var(--text-muted)',
-                  fontSize: '13px',
-                  cursor: 'pointer',
-                }}
-              >
-                {prompt}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Error */}
       {error && (
         <div style={{
-          padding: '14px 16px',
-          background: 'rgba(239, 68, 68, 0.1)',
-          border: '1px solid rgba(239, 68, 68, 0.3)',
-          borderRadius: '12px',
-          color: '#fca5a5',
-          fontSize: '14px',
-          marginBottom: '16px',
-        }}>
-          ⚠️ {error}
-        </div>
+          padding: '14px 16px', background: 'rgba(239, 68, 68, 0.1)',
+          border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '12px',
+          color: '#fca5a5', fontSize: '14px', marginBottom: '16px',
+        }}>⚠️ {error}</div>
       )}
 
       {/* Analyze button */}
-      <button
-        className="btn-primary"
-        onClick={analyze}
-        disabled={!isReady}
-        style={{
-          width: '100%',
-          padding: '18px',
-          fontSize: '17px',
-          opacity: isReady ? 1 : 0.4,
-          marginBottom: '24px',
-        }}
-      >
+      <button className="btn-primary" onClick={analyze} disabled={!isReady}
+        style={{ width: '100%', padding: '18px', fontSize: '17px', opacity: isReady ? 1 : 0.4, marginBottom: '24px' }}>
         {isLoading ? (
           <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
             <span style={{
-              width: '18px', height: '18px',
-              border: '2px solid rgba(255,255,255,0.3)',
-              borderTopColor: 'white',
-              borderRadius: '50%',
-              animation: 'spin 0.8s linear infinite',
-              display: 'inline-block',
+              width: '18px', height: '18px', border: '2px solid rgba(255,255,255,0.3)',
+              borderTopColor: 'white', borderRadius: '50%', animation: 'spin 0.8s linear infinite', display: 'inline-block',
             }} />
             {s.analyzing}
           </span>
         ) : s.button}
       </button>
-
-      {/* Info chips */}
-      <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginBottom: '20px' }}>
-        {s.chips.map(chip => (
-          <span key={chip} style={{
-            fontSize: '11px',
-            color: 'var(--text-dim)',
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: '100px',
-            padding: '5px 11px',
-          }}>
-            {chip}
-          </span>
-        ))}
-      </div>
     </div>
   );
 }
