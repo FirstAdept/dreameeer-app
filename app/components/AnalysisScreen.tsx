@@ -63,7 +63,7 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
   useEffect(() => {
     if (!videoTaskId) return;
     let attempts = 0;
-    const max = 40;
+    const max = 75;
 
     const poll = async () => {
       try {
