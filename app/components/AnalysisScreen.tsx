@@ -2,8 +2,7 @@
 import { useState, useEffect } from 'react';
 import type { DreamAnalysis, DreamRecord } from '../page';
 
-// ⚠️ Update when tunnel restarts
-const BACKEND_URL = 'https://fin-alpha-mac-dip.trycloudflare.com';
+const BACKEND_URL = 'https://dreameeer-backend-production.up.railway.app';
 
 interface Props {
   dreamText: string;

@@ -9,8 +9,7 @@ declare global {
   }
 }
 
-// ⚠️ Update this URL when Cloudflare tunnel restarts
-const BACKEND_URL = 'https://fin-alpha-mac-dip.trycloudflare.com';
+const BACKEND_URL = 'https://dreameeer-backend-production.up.railway.app';
 
 interface Props {
   onAnalysisComplete: (dreamText: string, analysis: DreamAnalysis, videoTaskId: string | null, imageUrl: string | null) => void;
