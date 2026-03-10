@@ -9,13 +9,49 @@ declare global {
   }
 }
 
+import type { AppSettings } from '../page';
+
 const BACKEND_URL = 'https://dreameeer-backend-production.up.railway.app';
+
+const tx = {
+  ru: {
+    subtitle: 'Расскажи мне свой сон',
+    placeholder: 'Мне приснилось, что я летел над городом, видел огни и чувствовал свободу...',
+    chars: 'символов',
+    charsLeft: (n: number) => `ещё ${n}`,
+    listening: 'Говори — я слушаю...',
+    analyzing: 'Анализирую сон...',
+    button: '🔮 Расшифровать сон',
+    error: 'Нет соединения с сервером. Проверь подключение.',
+    minChars: 'Расскажи сон подробнее (минимум 10 символов)',
+    promptsLabel: 'Попробуй рассказать о...',
+    prompts: ['✈️ Полёт', '🌊 Вода', '👁️ Преследование', '🏠 Дом', '💀 Смерть'],
+    chips: ['🧠 GPT-5.2', '🎬 Видео AI', '🔮 Юнг + Фрейд'],
+  },
+  en: {
+    subtitle: 'Tell me your dream',
+    placeholder: 'I was dreaming that I was flying over a city, seeing lights and feeling free...',
+    chars: 'chars',
+    charsLeft: (n: number) => `${n} more`,
+    listening: 'Speak — I am listening...',
+    analyzing: 'Analyzing dream...',
+    button: '🔮 Interpret Dream',
+    error: 'No server connection. Check your network.',
+    minChars: 'Tell the dream in more detail (min 10 characters)',
+    promptsLabel: 'Try telling about...',
+    prompts: ['✈️ Flying', '🌊 Water', '👁️ Chase', '🏠 Home', '💀 Death'],
+    chips: ['🧠 GPT-5.2', '🎬 Video AI', '🔮 Jung + Freud'],
+  },
+};
 
 interface Props {
   onAnalysisComplete: (dreamText: string, analysis: DreamAnalysis, videoTaskId: string | null, imageUrl: string | null) => void;
+  settings: AppSettings;
 }
 
-export default function HomeScreen({ onAnalysisComplete }: Props) {
+export default function HomeScreen({ onAnalysisComplete, settings }: Props) {
+  const lang = settings.language;
+  const s = tx[lang];
   const [dreamText, setDreamText] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -31,7 +67,7 @@ export default function HomeScreen({ onAnalysisComplete }: Props) {
     }
 
     const recognition = new SpeechRecognition();
-    recognition.lang = 'ru-RU';
+    recognition.lang = settings.language === 'en' ? 'en-US' : 'ru-RU';
     recognition.continuous = true;
     recognition.interimResults = true;
 
@@ -74,7 +110,7 @@ export default function HomeScreen({ onAnalysisComplete }: Props) {
   const analyze = async () => {
     const text = dreamText.trim();
     if (text.length < 10) {
-      setError('Расскажи сон подробнее (минимум 10 символов)');
+      setError(s.minChars);
       return;
     }
     setIsLoading(true);
@@ -84,7 +120,7 @@ export default function HomeScreen({ onAnalysisComplete }: Props) {
       const res = await fetch(`${BACKEND_URL}/api/dream/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ dreamText: text }),
+        body: JSON.stringify({ dreamText: text, theme: settings.theme, mode: settings.interpretMode, language: settings.language }),
       });
 
       if (!res.ok) throw new Error(`Ошибка сервера: ${res.status}`);
@@ -95,7 +131,7 @@ export default function HomeScreen({ onAnalysisComplete }: Props) {
       onAnalysisComplete(text, data.analysis, data.videoTaskId || null, data.imageUrl || null);
     } catch (e: any) {
       if (e.message.includes('fetch') || e.message.includes('Failed')) {
-        setError('Нет соединения с сервером. Проверь, запущен ли бэкенд.');
+        setError(s.error);
       } else {
         setError(e.message);
       }
@@ -129,7 +165,7 @@ export default function HomeScreen({ onAnalysisComplete }: Props) {
           Dreameeer
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '15px' }}>
-          Расскажи мне свой сон
+          {s.subtitle}
         </p>
       </div>
 
@@ -139,7 +175,7 @@ export default function HomeScreen({ onAnalysisComplete }: Props) {
           className="dream-textarea"
           value={dreamText + (interimText ? interimText : '')}
           onChange={e => setDreamText(e.target.value)}
-          placeholder="Мне приснилось, что я летел над городом, видел огни и чувствовал свободу..."
+          placeholder={s.placeholder}
           rows={7}
           style={{ padding: '14px' }}
           readOnly={isRecording}
@@ -156,7 +192,7 @@ export default function HomeScreen({ onAnalysisComplete }: Props) {
             fontSize: '13px',
             color: charCount >= 10 ? 'var(--text-muted)' : 'var(--text-dim)',
           }}>
-            {charCount} символов{charCount < 10 && charCount > 0 ? ` (ещё ${10 - charCount})` : ''}
+            {charCount} {s.chars}{charCount < 10 && charCount > 0 ? ` (${s.charsLeft(10 - charCount)})` : ''}
           </span>
 
           <button
@@ -196,7 +232,7 @@ export default function HomeScreen({ onAnalysisComplete }: Props) {
               animation: 'pulse 1s ease-in-out infinite',
             }} />
             <span style={{ fontSize: '14px', color: '#f9a8d4' }}>
-              Говори — я слушаю...
+              {s.listening}
             </span>
           </div>
         )}
@@ -206,16 +242,10 @@ export default function HomeScreen({ onAnalysisComplete }: Props) {
       {dreamText.length === 0 && (
         <div style={{ marginBottom: '20px' }}>
           <p style={{ fontSize: '12px', color: 'var(--text-dim)', marginBottom: '10px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-            Попробуй рассказать о...
+            {s.promptsLabel}
           </p>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            {[
-              '✈️ Полёт',
-              '🌊 Вода',
-              '👁️ Преследование',
-              '🏠 Дом',
-              '💀 Смерть',
-            ].map(prompt => (
+            {s.prompts.map(prompt => (
               <button
                 key={prompt}
                 onClick={() => setDreamText(`Мне приснилось: ${prompt.split(' ')[1].toLowerCase()}`)}
@@ -274,14 +304,14 @@ export default function HomeScreen({ onAnalysisComplete }: Props) {
               animation: 'spin 0.8s linear infinite',
               display: 'inline-block',
             }} />
-            Анализирую сон...
+            {s.analyzing}
           </span>
-        ) : '🔮 Расшифровать сон'}
+        ) : s.button}
       </button>
 
       {/* Info chips */}
       <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginBottom: '20px' }}>
-        {['🧠 GPT-4o', '🎬 Видео AI', '🔮 Юнг + Фрейд'].map(chip => (
+        {s.chips.map(chip => (
           <span key={chip} style={{
             fontSize: '11px',
             color: 'var(--text-dim)',

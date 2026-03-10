@@ -10,6 +10,7 @@ interface Props {
   videoTaskId: string | null;
   imageUrl: string | null;
   onBack: () => void;
+  settings?: any;
 }
 
 const moodEmoji: Record<string, string> = {

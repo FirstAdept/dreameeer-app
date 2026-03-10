@@ -22,7 +22,7 @@ function formatDate(iso: string) {
   return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
 }
 
-export default function DiaryScreen() {
+export default function DiaryScreen({ settings }: { settings?: any }) {
   const [dreams, setDreams] = useState<DreamRecord[]>([]);
   const [expanded, setExpanded] = useState<number | null>(null);
 

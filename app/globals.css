@@ -24,6 +24,57 @@
   --radius-xs: 8px;
 }
 
+/* ====== LIGHT THEME ====== */
+[data-theme="light"] {
+  --bg: #f5f0ea;
+  --bg-2: #ede8e1;
+  --bg-card: rgba(180, 150, 130, 0.1);
+  --bg-card-hover: rgba(180, 150, 130, 0.2);
+  --border: rgba(160, 130, 110, 0.28);
+  --border-subtle: rgba(0, 0, 0, 0.07);
+  --purple: #8b5cf6;
+  --purple-dark: #7c3aed;
+  --pink: #e879a8;
+  --blue: #5b9fd4;
+  --gold: #c9920f;
+  --text: #1e1b2e;
+  --text-muted: #5e5674;
+  --text-dim: #a098b2;
+}
+
+[data-theme="light"] .tab-bar {
+  background: rgba(245, 240, 234, 0.92);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .dream-textarea {
+  background: rgba(255, 255, 255, 0.65);
+  color: var(--text);
+}
+
+[data-theme="light"] .dream-textarea:focus {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+[data-theme="light"] .bg-orb-1 {
+  background: radial-gradient(circle, rgba(220, 170, 150, 0.35) 0%, transparent 70%);
+}
+
+[data-theme="light"] .bg-orb-2 {
+  background: radial-gradient(circle, rgba(190, 160, 210, 0.3) 0%, transparent 70%);
+}
+
+[data-theme="light"] .bg-orb-3 {
+  background: radial-gradient(circle, rgba(160, 200, 190, 0.25) 0%, transparent 70%);
+}
+
+[data-theme="light"] .gradient-text {
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 html,
 body {
   background: var(--bg);

@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import type { DreamRecord } from '../page';
 
-export default function StatsScreen() {
+export default function StatsScreen({ settings }: { settings?: any }) {
   const [dreams, setDreams] = useState<DreamRecord[]>([]);
 
   useEffect(() => {
