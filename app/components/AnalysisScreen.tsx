@@ -24,7 +24,6 @@ const moodEmoji: Record<string, string> = {
 function saveToDiary(dreamText: string, analysis: DreamAnalysis, imageUrl?: string, videoUrl?: string) {
   try {
     const dreams: DreamRecord[] = JSON.parse(localStorage.getItem('dreameeer_dreams') || '[]');
-    // Обновляем существующую запись если уже есть (по тексту сна)
     const existingIdx = dreams.findIndex(d => d.dreamText === dreamText);
     if (existingIdx >= 0) {
       if (imageUrl) dreams[existingIdx].imageUrl = imageUrl;
@@ -32,7 +31,6 @@ function saveToDiary(dreamText: string, analysis: DreamAnalysis, imageUrl?: stri
       localStorage.setItem('dreameeer_dreams', JSON.stringify(dreams));
       return;
     }
-    // Иначе добавляем новую запись
     const newRecord: DreamRecord = {
       id: Date.now(),
       date: new Date().toISOString(),
@@ -46,13 +44,48 @@ function saveToDiary(dreamText: string, analysis: DreamAnalysis, imageUrl?: stri
   } catch {}
 }
 
-export default function AnalysisScreen({ dreamText, analysis, videoTaskId, imageUrl, onBack }: Props) {
+export default function AnalysisScreen({ dreamText, analysis, videoTaskId, imageUrl, onBack, settings }: Props) {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [videoStatus, setVideoStatus] = useState<'idle' | 'polling' | 'done' | 'failed'>(
     videoTaskId ? 'polling' : 'idle'
   );
   const [selectedSymbol, setSelectedSymbol] = useState<number | null>(null);
   const [saved, setSaved] = useState(false);
+  const lang = settings?.language || 'ru';
+
+  const tx = {
+    ru: {
+      back: '← Назад',
+      saved: '✓ Сохранено в дневник',
+      symbols: 'Символы сна',
+      interpretation: 'Толкование',
+      advice: 'Совет дня',
+      emotion: 'Эмоциональный тон',
+      image: 'Визуализация сна',
+      video: 'Видео-анимация',
+      dreamTextLabel: 'Текст сна',
+      generating: 'Генерируем анимацию...',
+      generatingTime: 'Обычно 1–3 минуты',
+      videoFailed: '⚠️ Видео не удалось сгенерировать',
+      videoUnavailable: '🎬 Видео недоступно',
+    },
+    en: {
+      back: '← Back',
+      saved: '✓ Saved to diary',
+      symbols: 'Dream Symbols',
+      interpretation: 'Interpretation',
+      advice: 'Daily Tip',
+      emotion: 'Emotional Tone',
+      image: 'Dream Visualization',
+      video: 'Video Animation',
+      dreamTextLabel: 'Dream Text',
+      generating: 'Generating animation...',
+      generatingTime: 'Usually 1–3 minutes',
+      videoFailed: '⚠️ Video generation failed',
+      videoUnavailable: '🎬 Video unavailable',
+    },
+  };
+  const t = tx[lang as 'ru' | 'en'] || tx.ru;
 
   // Auto-save on mount
   useEffect(() => {
@@ -133,16 +166,16 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
             gap: '6px',
           }}
         >
-          ← Назад
+          {t.back}
         </button>
         <div style={{ fontSize: '13px', color: 'var(--text-dim)' }}>
-          {saved && '✓ Сохранено в дневник'}
+          {saved && t.saved}
         </div>
       </div>
 
       <div style={{ padding: '24px 20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
-        {/* Title card */}
+        {/* 1. Title card */}
         <div className="card-glow" style={{ padding: '24px', textAlign: 'center' }}>
           <div style={{ fontSize: '48px', marginBottom: '12px' }}>
             {moodEmoji[analysis.mood] || '🌙'}
@@ -171,10 +204,43 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
           </div>
         </div>
 
-        {/* Symbols */}
+        {/* 2. Dream visualization image */}
+        {imageUrl && (
+          <div>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '14px' }}>
+              <span style={{ fontSize: '20px' }}>🎨</span>
+              <h3 style={{ fontSize: '16px', fontWeight: '700' }}>{t.image}</h3>
+            </div>
+            <div style={{ borderRadius: '20px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+              <img
+                src={imageUrl}
+                alt="Dream visualization"
+                style={{ width: '100%', display: 'block' }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* 3. Dream text caption */}
+        <div style={{
+          padding: '16px 20px',
+          background: 'rgba(255,255,255,0.03)',
+          border: '1px solid var(--border-subtle)',
+          borderRadius: '16px',
+          borderLeft: '3px solid var(--purple)',
+        }}>
+          <div style={{ fontSize: '11px', color: 'var(--text-dim)', letterSpacing: '0.8px', textTransform: 'uppercase', marginBottom: '8px' }}>
+            {t.dreamTextLabel}
+          </div>
+          <p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: 1.6, fontStyle: 'italic' }}>
+            "{dreamText}"
+          </p>
+        </div>
+
+        {/* 4. Symbols */}
         <div>
           <h3 style={{ fontSize: '13px', color: 'var(--text-dim)', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '12px' }}>
-            Символы сна
+            {t.symbols}
           </h3>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
             {analysis.symbols.map((sym, i) => (
@@ -193,7 +259,6 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
             ))}
           </div>
 
-          {/* Symbol detail */}
           {selectedSymbol !== null && (
             <div className="card" style={{
               padding: '18px',
@@ -215,18 +280,18 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
           )}
         </div>
 
-        {/* Interpretation */}
+        {/* 5. Interpretation */}
         <div className="card" style={{ padding: '22px' }}>
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '14px' }}>
             <span style={{ fontSize: '20px' }}>🔮</span>
-            <h3 style={{ fontSize: '16px', fontWeight: '700' }}>Толкование</h3>
+            <h3 style={{ fontSize: '16px', fontWeight: '700' }}>{t.interpretation}</h3>
           </div>
           <p style={{ color: 'var(--text-muted)', fontSize: '15px', lineHeight: 1.7 }}>
             {analysis.interpretation}
           </p>
         </div>
 
-        {/* Recommendation */}
+        {/* 6. Recommendation */}
         <div style={{
           padding: '20px',
           background: 'rgba(251,191,36,0.07)',
@@ -235,14 +300,14 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
         }}>
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '10px' }}>
             <span style={{ fontSize: '20px' }}>💡</span>
-            <h3 style={{ fontSize: '15px', fontWeight: '700', color: '#fde68a' }}>Совет дня</h3>
+            <h3 style={{ fontSize: '15px', fontWeight: '700', color: '#fde68a' }}>{t.advice}</h3>
           </div>
           <p style={{ color: '#fbbf24', fontSize: '14px', lineHeight: 1.6 }}>
             {analysis.recommendation}
           </p>
         </div>
 
-        {/* Emotion */}
+        {/* 7. Emotion */}
         <div style={{
           display: 'flex', gap: '12px', alignItems: 'center',
           padding: '16px 20px',
@@ -252,33 +317,16 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
         }}>
           <span style={{ fontSize: '22px' }}>🎭</span>
           <div>
-            <div style={{ fontSize: '12px', color: 'var(--text-dim)', marginBottom: '2px' }}>Эмоциональный тон</div>
+            <div style={{ fontSize: '12px', color: 'var(--text-dim)', marginBottom: '2px' }}>{t.emotion}</div>
             <div style={{ fontWeight: '600', color: 'var(--text)' }}>{analysis.emotionalTone}</div>
           </div>
         </div>
 
-        {/* Image section — показываем сразу */}
-        {imageUrl && (
-          <div>
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '14px' }}>
-              <span style={{ fontSize: '20px' }}>🎨</span>
-              <h3 style={{ fontSize: '16px', fontWeight: '700' }}>Визуализация сна</h3>
-            </div>
-            <div style={{ borderRadius: '20px', overflow: 'hidden', border: '1px solid var(--border)' }}>
-              <img
-                src={imageUrl}
-                alt="Визуализация сна DALL-E"
-                style={{ width: '100%', display: 'block' }}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Video section — показываем когда готово */}
+        {/* 8. Video section */}
         <div>
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '14px' }}>
             <span style={{ fontSize: '20px' }}>🎬</span>
-            <h3 style={{ fontSize: '16px', fontWeight: '700' }}>Видео-анимация</h3>
+            <h3 style={{ fontSize: '16px', fontWeight: '700' }}>{t.video}</h3>
           </div>
 
           {videoStatus === 'polling' && (
@@ -292,10 +340,10 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
                 margin: '0 auto 12px',
               }} />
               <div style={{ color: 'var(--text-muted)', fontSize: '14px' }}>
-                Генерируем анимацию...
+                {t.generating}
               </div>
               <div style={{ color: 'var(--text-dim)', fontSize: '12px', marginTop: '4px' }}>
-                Обычно 1–3 минуты
+                {t.generatingTime}
               </div>
             </div>
           )}
@@ -316,7 +364,7 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
           {videoStatus === 'failed' && (
             <div className="card" style={{ padding: '16px', textAlign: 'center', borderColor: 'rgba(239,68,68,0.2)' }}>
               <div style={{ color: 'var(--text-dim)', fontSize: '13px' }}>
-                ⚠️ Видео не удалось сгенерировать
+                {t.videoFailed}
               </div>
             </div>
           )}
@@ -324,20 +372,10 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
           {videoStatus === 'idle' && !videoTaskId && (
             <div className="card" style={{ padding: '16px', textAlign: 'center' }}>
               <div style={{ color: 'var(--text-dim)', fontSize: '13px' }}>
-                🎬 Видео недоступно
+                {t.videoUnavailable}
               </div>
             </div>
           )}
-        </div>
-
-        {/* Dream text */}
-        <div className="card" style={{ padding: '18px' }}>
-          <div style={{ fontSize: '12px', color: 'var(--text-dim)', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '10px' }}>
-            Текст сна
-          </div>
-          <p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: 1.6, fontStyle: 'italic' }}>
-            "{dreamText}"
-          </p>
         </div>
 
         <div style={{ paddingBottom: '20px' }} />

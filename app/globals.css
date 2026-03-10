@@ -24,55 +24,158 @@
   --radius-xs: 8px;
 }
 
-/* ====== LIGHT THEME ====== */
+/* ====== LIGHT THEME — iOS Liquid Glass ====== */
 [data-theme="light"] {
-  --bg: #f5f0ea;
-  --bg-2: #ede8e1;
-  --bg-card: rgba(180, 150, 130, 0.1);
-  --bg-card-hover: rgba(180, 150, 130, 0.2);
-  --border: rgba(160, 130, 110, 0.28);
-  --border-subtle: rgba(0, 0, 0, 0.07);
-  --purple: #8b5cf6;
-  --purple-dark: #7c3aed;
-  --pink: #e879a8;
-  --blue: #5b9fd4;
-  --gold: #c9920f;
-  --text: #1e1b2e;
-  --text-muted: #5e5674;
-  --text-dim: #a098b2;
+  --bg: linear-gradient(160deg, #f0eaff 0%, #fce4f0 40%, #e8f0ff 100%);
+  --bg-solid: #f4eeff;
+  --bg-2: rgba(255, 255, 255, 0.45);
+  --bg-card: rgba(255, 255, 255, 0.52);
+  --bg-card-hover: rgba(255, 255, 255, 0.72);
+  --border: rgba(180, 140, 220, 0.28);
+  --border-subtle: rgba(160, 120, 200, 0.15);
+  --purple: #7c3aed;
+  --purple-dark: #6d28d9;
+  --pink: #db2777;
+  --blue: #2563eb;
+  --gold: #b45309;
+  --text: #1a1030;
+  --text-muted: #4a3f6b;
+  --text-dim: #9d92bb;
+  --glass-blur: blur(30px) saturate(180%);
 }
 
+/* Light theme body background */
+[data-theme="light"] body,
+[data-theme="light"] html {
+  background: #ede7ff;
+  background-image: linear-gradient(160deg, #f0eaff 0%, #fce4f0 40%, #e8f0ff 100%);
+  background-attachment: fixed;
+}
+
+/* Glass cards */
+[data-theme="light"] .card {
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  box-shadow: 0 4px 24px rgba(120, 80, 200, 0.08), inset 0 1px 0 rgba(255,255,255,0.8);
+}
+
+[data-theme="light"] .card-glow {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(30px) saturate(200%);
+  -webkit-backdrop-filter: blur(30px) saturate(200%);
+  box-shadow: 0 8px 32px rgba(120, 80, 200, 0.12), inset 0 1px 0 rgba(255,255,255,0.9);
+  animation: glowLight 4s ease-in-out infinite;
+}
+
+@keyframes glowLight {
+  0%, 100% { box-shadow: 0 8px 32px rgba(120, 80, 200, 0.1), inset 0 1px 0 rgba(255,255,255,0.9); }
+  50% { box-shadow: 0 12px 48px rgba(168, 85, 247, 0.2), 0 0 60px rgba(236,72,153,0.08), inset 0 1px 0 rgba(255,255,255,0.9); }
+}
+
+/* Tab bar */
 [data-theme="light"] .tab-bar {
-  background: rgba(245, 240, 234, 0.92);
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.62);
+  border-top: 1px solid rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  box-shadow: 0 -4px 24px rgba(120, 80, 200, 0.08);
 }
 
+/* Textarea */
 [data-theme="light"] .dream-textarea {
-  background: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(180, 140, 220, 0.25);
   color: var(--text);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 [data-theme="light"] .dream-textarea:focus {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.82);
+  border-color: rgba(124, 58, 237, 0.4);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.08);
 }
 
+[data-theme="light"] .dream-textarea::placeholder {
+  color: #b8acd4;
+}
+
+/* Buttons */
+[data-theme="light"] .btn-secondary {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 2px 12px rgba(120, 80, 200, 0.08), inset 0 1px 0 rgba(255,255,255,0.9);
+  color: #4a3f6b;
+}
+
+/* Orbs — warm pastels */
 [data-theme="light"] .bg-orb-1 {
-  background: radial-gradient(circle, rgba(220, 170, 150, 0.35) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(168, 100, 255, 0.22) 0%, transparent 70%);
+  opacity: 0.8;
 }
 
 [data-theme="light"] .bg-orb-2 {
-  background: radial-gradient(circle, rgba(190, 160, 210, 0.3) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.18) 0%, transparent 70%);
+  opacity: 0.7;
 }
 
 [data-theme="light"] .bg-orb-3 {
-  background: radial-gradient(circle, rgba(160, 200, 190, 0.25) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(100, 149, 255, 0.15) 0%, transparent 70%);
+  opacity: 0.6;
 }
 
+/* Gradient text */
 [data-theme="light"] .gradient-text {
-  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #ec4899 100%);
+  background: linear-gradient(135deg, #6d28d9 0%, #a855f7 50%, #db2777 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Symbol chips */
+[data-theme="light"] .symbol-chip {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(180, 140, 220, 0.3);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: #3d2f6e;
+  box-shadow: 0 2px 8px rgba(120, 80, 200, 0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+}
+
+/* Diary cards */
+[data-theme="light"] .diary-card {
+  background: rgba(255, 255, 255, 0.52);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  box-shadow: 0 2px 16px rgba(120, 80, 200, 0.06);
+}
+
+[data-theme="light"] .diary-card:active {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* Mic button idle state */
+[data-theme="light"] .mic-btn.idle {
+  background: rgba(255, 255, 255, 0.65);
+  border: 1.5px solid rgba(168, 85, 247, 0.3);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 2px 12px rgba(120, 80, 200, 0.1), inset 0 1px 0 rgba(255,255,255,0.9);
+}
+
+/* Tab active state */
+[data-theme="light"] .tab-item.active {
+  color: #7c3aed;
+}
+
+[data-theme="light"] .tab-item.active svg {
+  filter: drop-shadow(0 0 6px rgba(124, 58, 237, 0.5));
 }
 
 html,
