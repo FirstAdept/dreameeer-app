@@ -6,6 +6,7 @@ import AnalysisScreen from './components/AnalysisScreen';
 import DiaryScreen from './components/DiaryScreen';
 import StatsScreen from './components/StatsScreen';
 import SettingsScreen from './components/SettingsScreen';
+import PaywallScreen from './components/PaywallScreen';
 import TabBar from './components/TabBar';
 
 export type Screen = 'onboarding' | 'home' | 'analysis' | 'diary' | 'stats' | 'settings';
@@ -43,6 +44,15 @@ const DEFAULT_SETTINGS: AppSettings = {
   interpretMode: 'default',
 };
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://dreameeer-production.up.railway.app';
+const FREE_LIMIT = 3;
+
+function generateDeviceId(): string {
+  const arr = new Uint8Array(16);
+  crypto.getRandomValues(arr);
+  return Array.from(arr, b => b.toString(16).padStart(2, '0')).join('');
+}
+
 export default function App() {
   const [screen, setScreen] = useState<Screen>('home');
   const [currentDream, setCurrentDream] = useState<string>('');
@@ -52,14 +62,69 @@ export default function App() {
   const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
   const [mounted, setMounted] = useState(false);
 
+  // Subscription state
+  const [deviceId, setDeviceId] = useState<string>('');
+  const [showPaywall, setShowPaywall] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [dreamCount, setDreamCount] = useState(0);
+
   useEffect(() => {
     setMounted(true);
+
+    // Settings
     const onboarded = localStorage.getItem('dreameeer_onboarded');
     if (!onboarded) setScreen('onboarding');
-
     const saved = localStorage.getItem('dreameeer_settings');
     if (saved) {
       try { setSettings(JSON.parse(saved)); } catch {}
+    }
+
+    // DeviceId
+    let id = localStorage.getItem('dreameeer_device_id');
+    if (!id) {
+      id = generateDeviceId();
+      localStorage.setItem('dreameeer_device_id', id);
+    }
+    setDeviceId(id);
+
+    // Check subscription from server
+    fetch(`${API_BASE}/api/user/init`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ deviceId: id }),
+    })
+      .then(r => r.json())
+      .then(data => {
+        setDreamCount(data.dreamCount || 0);
+        setIsSubscribed(data.subscription?.status === 'active');
+      })
+      .catch(() => {
+        // Fallback: use local count
+        const localCount = parseInt(localStorage.getItem('dreameeer_dream_count') || '0', 10);
+        setDreamCount(localCount);
+      });
+
+    // Handle return from payment
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('payment') === 'success') {
+      // Re-check subscription status after payment return
+      setTimeout(() => {
+        fetch(`${API_BASE}/api/user/init`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ deviceId: id }),
+        })
+          .then(r => r.json())
+          .then(data => {
+            if (data.subscription?.status === 'active') {
+              setIsSubscribed(true);
+              setShowPaywall(false);
+            }
+          })
+          .catch(() => {});
+      }, 1500);
+      // Clean URL
+      window.history.replaceState({}, '', '/');
     }
   }, []);
 
@@ -83,12 +148,32 @@ export default function App() {
     videoTaskId: string | null,
     imageUrl: string | null
   ) => {
+    // Increment local count as backup
+    const newCount = dreamCount + 1;
+    setDreamCount(newCount);
+    localStorage.setItem('dreameeer_dream_count', String(newCount));
+
     setCurrentDream(dreamText);
     setCurrentAnalysis(analysis);
     setCurrentVideoTaskId(videoTaskId);
     setCurrentImageUrl(imageUrl);
     setScreen('analysis');
   };
+
+  const handleSubscriptionRequired = () => {
+    setShowPaywall(true);
+  };
+
+  // Show paywall screen (fullscreen, no tabs)
+  if (showPaywall) {
+    return (
+      <PaywallScreen
+        settings={settings}
+        deviceId={deviceId}
+        onClose={isSubscribed ? () => setShowPaywall(false) : undefined}
+      />
+    );
+  }
 
   const showTabs = screen !== 'onboarding' && screen !== 'analysis';
 
@@ -105,7 +190,12 @@ export default function App() {
         {screen === 'home' && (
           <HomeScreen
             onAnalysisComplete={handleAnalysisComplete}
+            onSubscriptionRequired={handleSubscriptionRequired}
             settings={settings}
+            deviceId={deviceId}
+            isSubscribed={isSubscribed}
+            dreamCount={dreamCount}
+            freeLimit={FREE_LIMIT}
             onThemeToggle={() => setSettings(s => ({ ...s, theme: s.theme === 'dark' ? 'light' : 'dark' }))}
           />
         )}

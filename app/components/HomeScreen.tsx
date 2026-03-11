@@ -38,11 +38,16 @@ const tx = {
 
 interface Props {
   onAnalysisComplete: (dreamText: string, analysis: DreamAnalysis, videoTaskId: string | null, imageUrl: string | null) => void;
+  onSubscriptionRequired?: () => void;
   settings: AppSettings;
   onThemeToggle: () => void;
+  deviceId?: string;
+  isSubscribed?: boolean;
+  dreamCount?: number;
+  freeLimit?: number;
 }
 
-export default function HomeScreen({ onAnalysisComplete, settings, onThemeToggle }: Props) {
+export default function HomeScreen({ onAnalysisComplete, onSubscriptionRequired, settings, onThemeToggle, deviceId = '', isSubscribed = false, dreamCount = 0, freeLimit = 3 }: Props) {
   const s = tx[settings.language];
   const [dreamText, setDreamText] = useState('');
   const [isRecording, setIsRecording] = useState(false);
@@ -120,6 +125,13 @@ export default function HomeScreen({ onAnalysisComplete, settings, onThemeToggle
   const analyze = async () => {
     const text = dreamText.trim();
     if (text.length < 10) { setError(s.minChars); return; }
+
+    // Check limit before sending request
+    if (!isSubscribed && dreamCount >= freeLimit) {
+      onSubscriptionRequired?.();
+      return;
+    }
+
     setIsLoading(true);
     setError('');
 
@@ -132,8 +144,15 @@ export default function HomeScreen({ onAnalysisComplete, settings, onThemeToggle
           theme: settings.theme,
           mode: settings.interpretMode,
           language: settings.language,
+          deviceId: deviceId || undefined,
         }),
       });
+
+      // 402 = subscription required
+      if (res.status === 402) {
+        onSubscriptionRequired?.();
+        return;
+      }
 
       if (!res.ok) throw new Error(`Ошибка сервера: ${res.status}`);
       const data = await res.json();
@@ -271,6 +290,31 @@ export default function HomeScreen({ onAnalysisComplete, settings, onThemeToggle
           border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '12px',
           color: '#fca5a5', fontSize: '14px', marginBottom: '16px',
         }}>⚠️ {error}</div>
+      )}
+
+      {/* Free dreams counter */}
+      {!isSubscribed && (
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+          marginBottom: '10px',
+        }}>
+          {Array.from({ length: freeLimit }).map((_, i) => (
+            <div key={i} style={{
+              width: '8px', height: '8px', borderRadius: '50%',
+              background: i < dreamCount
+                ? 'rgba(239,68,68,0.6)'
+                : 'rgba(124,58,237,0.6)',
+              border: i < dreamCount
+                ? '1px solid rgba(239,68,68,0.4)'
+                : '1px solid rgba(124,58,237,0.4)',
+            }} />
+          ))}
+          <span style={{ fontSize: '12px', color: 'var(--text-muted)', marginLeft: '4px' }}>
+            {settings.language === 'ru'
+              ? dreamCount >= freeLimit ? 'лимит исчерпан' : `${freeLimit - dreamCount} из ${freeLimit} бесплатных`
+              : dreamCount >= freeLimit ? 'limit reached' : `${freeLimit - dreamCount} of ${freeLimit} free`}
+          </span>
+        </div>
       )}
 
       {/* Analyze button */}
