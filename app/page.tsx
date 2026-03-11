@@ -103,7 +103,11 @@ export default function App() {
           <OnboardingScreen onDone={() => setScreen('home')} />
         )}
         {screen === 'home' && (
-          <HomeScreen onAnalysisComplete={handleAnalysisComplete} settings={settings} />
+          <HomeScreen
+            onAnalysisComplete={handleAnalysisComplete}
+            settings={settings}
+            onThemeToggle={() => setSettings(s => ({ ...s, theme: s.theme === 'dark' ? 'light' : 'dark' }))}
+          />
         )}
         {screen === 'analysis' && currentAnalysis && (
           <AnalysisScreen

@@ -292,7 +292,7 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
         </div>
 
         {/* 6. Recommendation */}
-        <div style={{
+        <div className="advice-card" style={{
           padding: '20px',
           background: 'rgba(251,191,36,0.07)',
           border: '1px solid rgba(251,191,36,0.2)',
@@ -300,9 +300,9 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
         }}>
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '10px' }}>
             <span style={{ fontSize: '20px' }}>💡</span>
-            <h3 style={{ fontSize: '15px', fontWeight: '700', color: '#fde68a' }}>{t.advice}</h3>
+            <h3 className="advice-title" style={{ fontSize: '15px', fontWeight: '700', color: '#fde68a' }}>{t.advice}</h3>
           </div>
-          <p style={{ color: '#fbbf24', fontSize: '14px', lineHeight: 1.6 }}>
+          <p className="advice-text" style={{ color: '#fbbf24', fontSize: '14px', lineHeight: 1.6 }}>
             {analysis.recommendation}
           </p>
         </div>

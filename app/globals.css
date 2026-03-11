@@ -178,6 +178,40 @@
   filter: drop-shadow(0 0 6px rgba(124, 58, 237, 0.5));
 }
 
+/* === GOLD / ADVICE TEXT — light theme overrides === */
+/* In dark mode gold (#fde68a, #fbbf24) is fine.
+   In light mode we switch to deep amber-violet to stay readable */
+[data-theme="light"] .advice-card {
+  background: rgba(124, 58, 237, 0.07) !important;
+  border: 1px solid rgba(124, 58, 237, 0.2) !important;
+}
+
+[data-theme="light"] .advice-card .advice-title {
+  color: #6d28d9 !important;
+}
+
+[data-theme="light"] .advice-card .advice-text {
+  color: #4a3f6b !important;
+}
+
+/* Lucidity score badge — keep colored but readable */
+[data-theme="light"] .score-badge-green  { background: rgba(5,150,105,0.12) !important; border-color: rgba(5,150,105,0.3) !important; color: #065f46 !important; }
+[data-theme="light"] .score-badge-purple { background: rgba(109,40,217,0.1) !important;  border-color: rgba(109,40,217,0.3) !important; color: #4c1d95 !important; }
+[data-theme="light"] .score-badge-pink   { background: rgba(219,39,119,0.1) !important;  border-color: rgba(219,39,119,0.3) !important; color: #831843 !important; }
+
+/* Stats — best day gold label */
+[data-theme="light"] .stats-best-day {
+  color: #92400e !important;
+}
+
+/* gradient-text-gold override for light */
+[data-theme="light"] .gradient-text-gold {
+  background: linear-gradient(135deg, #92400e 0%, #b45309 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 html,
 body {
   background: var(--bg);
@@ -300,6 +334,44 @@ body {
 @keyframes float {
   0%, 100% { transform: translateY(0px) rotate(0deg); }
   50% { transform: translateY(-12px) rotate(3deg); }
+}
+
+@keyframes themeRippleDark {
+  0%   { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+  65%  { opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(80); opacity: 0; }
+}
+
+@keyframes themeRippleLight {
+  0%   { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+  65%  { opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(80); opacity: 0; }
+}
+
+@keyframes moonToDark {
+  0%   { transform: rotate(0deg) scale(1); filter: drop-shadow(0 0 20px rgba(167,139,250,0.5)); }
+  25%  { transform: rotate(-30deg) scale(0.6); }
+  50%  { transform: rotate(-180deg) scale(0.1); opacity: 0.2; }
+  75%  { transform: rotate(-270deg) scale(0.6); opacity: 0.7; }
+  100% { transform: rotate(-360deg) scale(1); filter: drop-shadow(0 0 28px rgba(90,50,200,0.8)); }
+}
+
+@keyframes moonToLight {
+  0%   { transform: rotate(0deg) scale(1); filter: drop-shadow(0 0 20px rgba(251,191,36,0.5)); }
+  25%  { transform: rotate(30deg) scale(0.6); }
+  50%  { transform: rotate(180deg) scale(0.1); opacity: 0.2; }
+  75%  { transform: rotate(270deg) scale(0.6); opacity: 0.7; }
+  100% { transform: rotate(360deg) scale(1); filter: drop-shadow(0 0 28px rgba(251,191,36,0.9)); }
+}
+
+@keyframes moonPulseIdle {
+  0%, 100% { filter: drop-shadow(0 0 20px rgba(167,139,250,0.5)); transform: translateY(0) scale(1); }
+  50%       { filter: drop-shadow(0 0 32px rgba(167,139,250,0.8)); transform: translateY(-6px) scale(1.05); }
+}
+
+@keyframes sunPulseIdle {
+  0%, 100% { filter: drop-shadow(0 0 20px rgba(251,191,36,0.6)); transform: translateY(0) scale(1); }
+  50%       { filter: drop-shadow(0 0 36px rgba(251,191,36,1)); transform: translateY(-6px) scale(1.08); }
 }
 
 @keyframes glow {
