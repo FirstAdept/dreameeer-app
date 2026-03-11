@@ -338,3 +338,4 @@ export default function StatsScreen({ settings }: { settings?: any }) {
     </div>
   );
 }
+
