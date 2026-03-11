@@ -1,0 +1,74 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" rx="110" fill="#08081a"/>
+
+  <!-- Outer glow ring -->
+  <circle cx="256" cy="230" r="148" fill="url(#outerGlow)" opacity="0.18"/>
+
+  <!-- Star particles -->
+  <circle cx="120" cy="110" r="3" fill="#c4b5fd" opacity="0.8"/>
+  <circle cx="390" cy="90" r="2" fill="#f472b6" opacity="0.7"/>
+  <circle cx="410" cy="180" r="2.5" fill="#a78bfa" opacity="0.6"/>
+  <circle cx="95" cy="200" r="2" fill="#60a5fa" opacity="0.5"/>
+  <circle cx="155" cy="350" r="1.5" fill="#c4b5fd" opacity="0.6"/>
+  <circle cx="370" cy="340" r="2" fill="#f472b6" opacity="0.5"/>
+  <circle cx="440" cy="260" r="1.5" fill="#a78bfa" opacity="0.4"/>
+  <circle cx="70" cy="300" r="2" fill="#c4b5fd" opacity="0.4"/>
+  <circle cx="300" cy="80" r="1.5" fill="#60a5fa" opacity="0.5"/>
+  <circle cx="200" cy="75" r="2.5" fill="#f472b6" opacity="0.6"/>
+
+  <!-- Moon body -->
+  <circle cx="256" cy="220" r="108" fill="url(#moonGradient)"/>
+
+  <!-- Moon crescent cutout (creates crescent shape) -->
+  <circle cx="310" cy="190" r="88" fill="#08081a"/>
+
+  <!-- Inner glow on moon edge -->
+  <circle cx="256" cy="220" r="108" fill="none" stroke="url(#moonEdge)" stroke-width="3" opacity="0.6"/>
+
+  <!-- Sparkle on moon -->
+  <circle cx="188" cy="185" r="18" fill="url(#sparkleGlow)" opacity="0.5"/>
+
+  <!-- Letter "D" / Dreameeer wordmark -->
+  <text x="256" y="410"
+        font-family="-apple-system, SF Pro Display, Helvetica Neue, sans-serif"
+        font-size="72"
+        font-weight="800"
+        letter-spacing="-2"
+        text-anchor="middle"
+        fill="url(#textGrad)">Dreameeer</text>
+
+  <!-- Small dots under text -->
+  <circle cx="196" cy="445" r="3" fill="#a78bfa" opacity="0.5"/>
+  <circle cx="256" cy="448" r="3" fill="#f472b6" opacity="0.5"/>
+  <circle cx="316" cy="445" r="3" fill="#60a5fa" opacity="0.5"/>
+
+  <defs>
+    <radialGradient id="moonGradient" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#e0d4ff"/>
+      <stop offset="40%" stop-color="#c4b5fd"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </radialGradient>
+
+    <radialGradient id="outerGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#7c3aed" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="sparkleGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#c4b5fd" stop-opacity="0"/>
+    </radialGradient>
+
+    <linearGradient id="moonEdge" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e0d4ff" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#7c3aed" stop-opacity="0"/>
+    </linearGradient>
+
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#c4b5fd"/>
+      <stop offset="50%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#f472b6"/>
+    </linearGradient>
+  </defs>
+</svg>

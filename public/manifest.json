@@ -1,22 +1,33 @@
 {
-  "name": "Dreameeer",
+  "name": "Dreameeer — ИИ Толкователь снов",
   "short_name": "Dreameeer",
-  "description": "ИИ-толкователь снов с видео-визуализацией",
+  "description": "Расшифруй свои сны с помощью ИИ. Символы, толкование, видео-визуализация.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#08081a",
-  "theme_color": "#08081a",
+  "theme_color": "#7c3aed",
   "orientation": "portrait",
+  "lang": "ru",
+  "categories": ["lifestyle", "health"],
   "icons": [
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
-  ]
+  ],
+  "prefer_related_applications": false
 }
