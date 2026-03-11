@@ -5,7 +5,7 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#08081a",
-  "theme_color": "#7c3aed",
+  "theme_color": "#08081a",
   "orientation": "portrait",
   "icons": [
     {
@@ -18,15 +18,5 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ],
-  "dir": "ltr",
-  "id": "com.dreameeer.app",
-  "scope": "/",
-  "lang": "ru",
-  "prefer_related_applications": false,
-  "categories": [
-    "entertainment",
-    "health",
-    "lifestyle"
   ]
 }
