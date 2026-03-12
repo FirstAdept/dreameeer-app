@@ -319,7 +319,7 @@ export default function HomeScreen({ onAnalysisComplete, onSubscriptionRequired,
 
       {/* Analyze button */}
       <button className="btn-primary" onClick={analyze} disabled={!isReady}
-        style={{ width: '100%', padding: '18px', fontSize: '17px', opacity: isReady ? 1 : 0.4, marginBottom: '24px' }}>
+        style={{ width: '100%', padding: '18px', fontSize: '17px', opacity: isReady ? 1 : 0.4, marginBottom: '16px' }}>
         {isLoading ? (
           <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
             <span style={{
@@ -329,6 +329,46 @@ export default function HomeScreen({ onAnalysisComplete, onSubscriptionRequired,
             {s.analyzing}
           </span>
         ) : s.button}
+      </button>
+
+      {/* Share button */}
+      <button
+        onClick={() => {
+          const shareData = {
+            title: 'Dreameeer',
+            text: settings.language === 'ru'
+              ? '🌙 Попробуй Dreameeer — ИИ толкует сны и создаёт видео-визуализации!'
+              : '🌙 Try Dreameeer — AI interprets your dreams and creates video visualizations!',
+            url: 'https://dreameeer-app.vercel.app',
+          };
+          if (navigator.share) {
+            navigator.share(shareData).catch(() => {});
+          } else {
+            navigator.clipboard?.writeText('https://dreameeer-app.vercel.app').then(() => {
+              alert(settings.language === 'ru' ? 'Ссылка скопирована!' : 'Link copied!');
+            });
+          }
+        }}
+        style={{
+          width: '100%',
+          padding: '14px',
+          borderRadius: '16px',
+          border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(124,58,237,0.2)',
+          background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(124,58,237,0.06)',
+          backdropFilter: 'blur(10px)',
+          color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(124,58,237,0.8)',
+          fontSize: '15px',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '8px',
+          marginBottom: '24px',
+          transition: 'all 0.2s ease',
+        }}
+      >
+        <span style={{ fontSize: '18px' }}>🔗</span>
+        {settings.language === 'ru' ? 'Поделиться приложением' : 'Share the app'}
       </button>
     </div>
   );
