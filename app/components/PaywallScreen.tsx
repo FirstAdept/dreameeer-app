@@ -57,7 +57,7 @@ export default function PaywallScreen({ settings, deviceId, onClose }: PaywallSc
       skip: 'Skip',
     },
   };
-  const t = tx[lang] || tx.ru;
+  const t = tx[lang as keyof typeof tx] || tx.ru;
 
   const handleSubscribe = async () => {
     setLoading(true);
