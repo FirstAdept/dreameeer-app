@@ -9,6 +9,7 @@ interface Props {
   settings: AppSettings;
   onSettingsChange: (s: AppSettings) => void;
   deviceId?: string;
+  isSubscribed?: boolean;
 }
 
 const t = {
@@ -52,6 +53,9 @@ const t = {
     restoring: 'Проверяем...',
     restoreOk: 'Подписка активирована! Перезагрузите страницу.',
     restoreNone: 'Оплаченный платёж не найден',
+    proPlan: 'PRO',
+    proPlanDesc: 'Активна',
+    proActive: '✅ У вас активная PRO подписка',
     version: 'Dreameeer v1.0 · AI Dream Interpreter',
   },
   en: {
@@ -94,11 +98,14 @@ const t = {
     restoring: 'Checking...',
     restoreOk: 'Subscription activated! Reload the page.',
     restoreNone: 'No paid payment found',
+    proPlan: 'PRO',
+    proPlanDesc: 'Active',
+    proActive: '✅ You have an active PRO subscription',
     version: 'Dreameeer v1.0 · AI Dream Interpreter',
   },
 };
 
-export default function SettingsScreen({ settings, onSettingsChange, deviceId }: Props) {
+export default function SettingsScreen({ settings, onSettingsChange, deviceId, isSubscribed }: Props) {
   const lang = settings.language;
   const tx = t[lang];
   const [paying, setPaying] = useState(false);
@@ -300,19 +307,23 @@ export default function SettingsScreen({ settings, onSettingsChange, deviceId }:
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '12px 16px',
-          background: 'rgba(255,255,255,0.04)',
-          border: '1px solid var(--border-subtle)',
+          background: isSubscribed ? 'rgba(124,58,237,0.15)' : 'rgba(255,255,255,0.04)',
+          border: isSubscribed ? '1px solid rgba(168,85,247,0.5)' : '1px solid var(--border-subtle)',
           borderRadius: '12px',
           marginBottom: '12px',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontSize: '18px' }}>📋</span>
+            <span style={{ fontSize: '18px' }}>{isSubscribed ? '💎' : '📋'}</span>
             <div>
               <div style={{ fontSize: '12px', color: 'var(--text-dim)' }}>{tx.currentPlan}</div>
-              <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text)' }}>{tx.freePlan}</div>
+              <div style={{ fontSize: '14px', fontWeight: '700', color: isSubscribed ? '#a855f7' : 'var(--text)' }}>
+                {isSubscribed ? tx.proPlan : tx.freePlan}
+              </div>
             </div>
           </div>
-          <span style={{ fontSize: '12px', color: 'var(--text-dim)' }}>{tx.freePlanDesc}</span>
+          <span style={{ fontSize: '12px', color: isSubscribed ? '#4ade80' : 'var(--text-dim)' }}>
+            {isSubscribed ? tx.proPlanDesc : tx.freePlanDesc}
+          </span>
         </div>
 
         {/* PRO card */}
@@ -382,47 +393,58 @@ export default function SettingsScreen({ settings, onSettingsChange, deviceId }:
             ))}
           </div>
 
-          {/* CTA button */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <button
-              className="btn-primary"
-              style={{
-                width: '100%', padding: '16px', fontSize: '16px', borderRadius: '14px',
-                position: 'relative', opacity: paying ? 0.7 : 1,
-                cursor: paying ? 'not-allowed' : 'pointer',
-              }}
-              onClick={handleBuy}
-              disabled={paying}
-            >
-              {paying ? tx.payingText : `✨ ${tx.ctaTrial}`}
-            </button>
-            {payError && (
-              <p style={{ textAlign: 'center', fontSize: '13px', color: '#f87171', margin: '4px 0 0' }}>
-                {payError}
-              </p>
-            )}
-            {/* Restore subscription */}
-            <button
-              onClick={handleRestore}
-              disabled={restoring}
-              style={{
-                width: '100%', padding: '12px', fontSize: '13px', fontWeight: '500',
-                background: 'transparent', border: 'none',
-                color: 'var(--text-dim)', cursor: restoring ? 'not-allowed' : 'pointer',
-                opacity: restoring ? 0.6 : 1,
-              }}
-            >
-              {restoring ? tx.restoring : tx.restoreBtn}
-            </button>
-            {restoreMsg && (
-              <p style={{
-                textAlign: 'center', fontSize: '13px', margin: '0',
-                color: restoreMsg === tx.restoreOk ? '#4ade80' : '#f87171',
-              }}>
-                {restoreMsg}
-              </p>
-            )}
-          </div>
+          {/* CTA — если уже подписан, показываем статус; иначе — кнопку покупки */}
+          {isSubscribed ? (
+            <div style={{
+              textAlign: 'center', padding: '14px',
+              background: 'rgba(74,222,128,0.1)',
+              border: '1px solid rgba(74,222,128,0.3)',
+              borderRadius: '14px',
+              fontSize: '15px', fontWeight: '600', color: '#4ade80',
+            }}>
+              {tx.proActive}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <button
+                className="btn-primary"
+                style={{
+                  width: '100%', padding: '16px', fontSize: '16px', borderRadius: '14px',
+                  position: 'relative', opacity: paying ? 0.7 : 1,
+                  cursor: paying ? 'not-allowed' : 'pointer',
+                }}
+                onClick={handleBuy}
+                disabled={paying}
+              >
+                {paying ? tx.payingText : `✨ ${tx.ctaTrial}`}
+              </button>
+              {payError && (
+                <p style={{ textAlign: 'center', fontSize: '13px', color: '#f87171', margin: '4px 0 0' }}>
+                  {payError}
+                </p>
+              )}
+              <button
+                onClick={handleRestore}
+                disabled={restoring}
+                style={{
+                  width: '100%', padding: '12px', fontSize: '13px', fontWeight: '500',
+                  background: 'transparent', border: 'none',
+                  color: 'var(--text-dim)', cursor: restoring ? 'not-allowed' : 'pointer',
+                  opacity: restoring ? 0.6 : 1,
+                }}
+              >
+                {restoring ? tx.restoring : tx.restoreBtn}
+              </button>
+              {restoreMsg && (
+                <p style={{
+                  textAlign: 'center', fontSize: '13px', margin: '0',
+                  color: restoreMsg === tx.restoreOk ? '#4ade80' : '#f87171',
+                }}>
+                  {restoreMsg}
+                </p>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

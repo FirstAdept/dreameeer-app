@@ -231,7 +231,7 @@ export default function App() {
         {screen === 'diary' && <DiaryScreen settings={settings} />}
         {screen === 'stats' && <StatsScreen settings={settings} />}
         {screen === 'settings' && (
-          <SettingsScreen settings={settings} onSettingsChange={setSettings} deviceId={deviceId} />
+          <SettingsScreen settings={settings} onSettingsChange={setSettings} deviceId={deviceId} isSubscribed={isSubscribed} />
         )}
       </div>
 
