@@ -104,27 +104,46 @@ export default function App() {
         setDreamCount(localCount);
       });
 
-    // Handle return from payment
+    // Handle return from payment — dual strategy: direct check + webhook poll
     const params = new URLSearchParams(window.location.search);
     if (params.get('payment') === 'success') {
-      // Re-check subscription status after payment return
-      setTimeout(() => {
-        fetch(`${API_BASE}/api/user/init`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ deviceId: id }),
-        })
-          .then(r => r.json())
-          .then(data => {
-            if (data.subscription?.status === 'active') {
-              setIsSubscribed(true);
-              setShowPaywall(false);
-            }
-          })
-          .catch(() => {});
-      }, 1500);
-      // Clean URL
       window.history.replaceState({}, '', '/');
+      const savedPaymentId = localStorage.getItem('dreameeer_pending_payment');
+
+      const activate = () => {
+        setIsSubscribed(true);
+        setShowPaywall(false);
+        localStorage.removeItem('dreameeer_pending_payment');
+      };
+
+      const checkSub = async (attempts: number) => {
+        try {
+          // 1. If we have paymentId — check directly with YooKassa via backend
+          if (savedPaymentId) {
+            const r = await fetch(`${API_BASE}/api/payment/check`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ deviceId: id, paymentId: savedPaymentId }),
+            });
+            const data = await r.json();
+            if (data.activated) { activate(); return; }
+          }
+          // 2. Fallback: check user subscription status (webhook may have fired)
+          const r2 = await fetch(`${API_BASE}/api/user/init`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ deviceId: id }),
+          });
+          const data2 = await r2.json();
+          if (data2.subscription?.status === 'active') {
+            setDreamCount(data2.dreamCount ?? 0);
+            activate(); return;
+          }
+        } catch { /* ignore */ }
+        if (attempts > 1) setTimeout(() => checkSub(attempts - 1), 3000);
+      };
+      // Try 8 times × 3 sec = 24 sec window
+      setTimeout(() => checkSub(8), 500);
     }
   }, []);
 

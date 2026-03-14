@@ -110,6 +110,7 @@ export default function SettingsScreen({ settings, onSettingsChange, deviceId }:
       });
       const data = await res.json();
       if (data.redirectUrl) {
+        if (data.paymentId) localStorage.setItem('dreameeer_pending_payment', data.paymentId);
         window.location.href = data.redirectUrl;
       } else {
         setPayError(data.error || tx.payError);

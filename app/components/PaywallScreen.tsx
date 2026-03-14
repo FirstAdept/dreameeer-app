@@ -70,6 +70,7 @@ export default function PaywallScreen({ settings, deviceId, onClose }: PaywallSc
       });
       const data = await res.json();
       if (data.redirectUrl) {
+        if (data.paymentId) localStorage.setItem('dreameeer_pending_payment', data.paymentId);
         window.location.href = data.redirectUrl;
       } else {
         setError(data.error || 'Ошибка создания платежа');
