@@ -45,7 +45,7 @@ const DEFAULT_SETTINGS: AppSettings = {
 };
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://dreameeer-backend-production.up.railway.app';
-const FREE_LIMIT = 3;
+const FREE_LIMIT = 1;
 
 function generateDeviceId(): string {
   const arr = new Uint8Array(16);
@@ -212,7 +212,7 @@ export default function App() {
         {screen === 'diary' && <DiaryScreen settings={settings} />}
         {screen === 'stats' && <StatsScreen settings={settings} />}
         {screen === 'settings' && (
-          <SettingsScreen settings={settings} onSettingsChange={setSettings} />
+          <SettingsScreen settings={settings} onSettingsChange={setSettings} deviceId={deviceId} />
         )}
       </div>
 

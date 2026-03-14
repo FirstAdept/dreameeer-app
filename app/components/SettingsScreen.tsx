@@ -1,10 +1,14 @@
 'use client';
+import { useState } from 'react';
 import type { CSSProperties } from 'react';
 import type { AppSettings } from '../page';
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://dreameeer-backend-production.up.railway.app';
 
 interface Props {
   settings: AppSettings;
   onSettingsChange: (s: AppSettings) => void;
+  deviceId?: string;
 }
 
 const t = {
@@ -26,7 +30,7 @@ const t = {
     pro: 'Подписка',
     proTitle: 'Dreameeer PRO',
     proSubtitle: 'Полный доступ ко всем возможностям',
-    trialBadge: '1 день бесплатно',
+    trialBadge: '1 сон бесплатно',
     price: '499 ₽',
     pricePeriod: '/ месяц',
     proFeatures: [
@@ -36,12 +40,14 @@ const t = {
       'Дневник без ограничений',
       'Приоритетная генерация',
     ],
-    ctaTrial: 'Попробовать бесплатно',
+    ctaTrial: 'Купить месяц снов',
     ctaSub: 'Подписаться',
     currentPlan: 'Текущий план',
     freePlan: 'Бесплатный',
-    freePlanDesc: '3 видео в месяц',
-    comingSoon: 'Скоро',
+    freePlanDesc: '1 сон бесплатно',
+    payingText: 'Создаём платёж...',
+    payError: 'Ошибка создания платежа',
+    noConnection: 'Нет соединения с сервером',
     version: 'Dreameeer v1.0 · AI Dream Interpreter',
   },
   en: {
@@ -62,7 +68,7 @@ const t = {
     pro: 'Subscription',
     proTitle: 'Dreameeer PRO',
     proSubtitle: 'Full access to all features',
-    trialBadge: '1 day free',
+    trialBadge: '1 dream free',
     price: '499 ₽',
     pricePeriod: '/ month',
     proFeatures: [
@@ -72,22 +78,48 @@ const t = {
       'Unlimited dream diary',
       'Priority generation',
     ],
-    ctaTrial: 'Try for free',
+    ctaTrial: 'Buy a Month of Dreams',
     ctaSub: 'Subscribe',
     currentPlan: 'Current plan',
     freePlan: 'Free',
-    freePlanDesc: '3 videos per month',
-    comingSoon: 'Coming soon',
+    freePlanDesc: '1 dream free',
+    payingText: 'Creating payment...',
+    payError: 'Failed to create payment',
+    noConnection: 'No connection to server',
     version: 'Dreameeer v1.0 · AI Dream Interpreter',
   },
 };
 
-export default function SettingsScreen({ settings, onSettingsChange }: Props) {
+export default function SettingsScreen({ settings, onSettingsChange, deviceId }: Props) {
   const lang = settings.language;
   const tx = t[lang];
+  const [paying, setPaying] = useState(false);
+  const [payError, setPayError] = useState('');
 
   const set = (patch: Partial<AppSettings>) =>
     onSettingsChange({ ...settings, ...patch });
+
+  const handleBuy = async () => {
+    setPaying(true);
+    setPayError('');
+    try {
+      const res = await fetch(`${API_BASE}/api/payment/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deviceId: deviceId || '' }),
+      });
+      const data = await res.json();
+      if (data.redirectUrl) {
+        window.location.href = data.redirectUrl;
+      } else {
+        setPayError(data.error || tx.payError);
+      }
+    } catch {
+      setPayError(tx.noConnection);
+    } finally {
+      setPaying(false);
+    }
+  };
 
   const sectionStyle: CSSProperties = {
     marginBottom: '24px',
@@ -316,35 +348,26 @@ export default function SettingsScreen({ settings, onSettingsChange }: Props) {
             ))}
           </div>
 
-          {/* CTA buttons */}
+          {/* CTA button */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {/* Trial button */}
             <button
               className="btn-primary"
-              style={{ width: '100%', padding: '16px', fontSize: '16px', borderRadius: '14px', position: 'relative' }}
-              onClick={() => alert('Coming soon!')}
-            >
-              ✨ {tx.ctaTrial}
-            </button>
-            {/* Subscribe button */}
-            <button
-              onClick={() => alert('Coming soon!')}
               style={{
-                width: '100%', padding: '14px', fontSize: '14px', fontWeight: '600',
-                background: 'transparent',
-                border: '1px solid rgba(168,85,247,0.4)',
-                borderRadius: '14px', color: 'var(--purple)',
-                cursor: 'pointer', transition: 'all 0.2s ease',
+                width: '100%', padding: '16px', fontSize: '16px', borderRadius: '14px',
+                position: 'relative', opacity: paying ? 0.7 : 1,
+                cursor: paying ? 'not-allowed' : 'pointer',
               }}
+              onClick={handleBuy}
+              disabled={paying}
             >
-              {tx.ctaSub}
+              {paying ? tx.payingText : `✨ ${tx.ctaTrial}`}
             </button>
+            {payError && (
+              <p style={{ textAlign: 'center', fontSize: '13px', color: '#f87171', margin: '4px 0 0' }}>
+                {payError}
+              </p>
+            )}
           </div>
-
-          {/* Coming soon label */}
-          <p style={{ textAlign: 'center', fontSize: '11px', color: 'var(--text-dim)', marginTop: '12px', letterSpacing: '0.5px' }}>
-            {tx.comingSoon} · In-App Purchase
-          </p>
         </div>
       </div>
 
