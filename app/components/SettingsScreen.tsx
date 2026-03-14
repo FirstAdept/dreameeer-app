@@ -48,6 +48,10 @@ const t = {
     payingText: 'Создаём платёж...',
     payError: 'Ошибка создания платежа',
     noConnection: 'Нет соединения с сервером',
+    restoreBtn: 'Восстановить подписку',
+    restoring: 'Проверяем...',
+    restoreOk: 'Подписка активирована! Перезагрузите страницу.',
+    restoreNone: 'Оплаченный платёж не найден',
     version: 'Dreameeer v1.0 · AI Dream Interpreter',
   },
   en: {
@@ -86,6 +90,10 @@ const t = {
     payingText: 'Creating payment...',
     payError: 'Failed to create payment',
     noConnection: 'No connection to server',
+    restoreBtn: 'Restore subscription',
+    restoring: 'Checking...',
+    restoreOk: 'Subscription activated! Reload the page.',
+    restoreNone: 'No paid payment found',
     version: 'Dreameeer v1.0 · AI Dream Interpreter',
   },
 };
@@ -95,6 +103,8 @@ export default function SettingsScreen({ settings, onSettingsChange, deviceId }:
   const tx = t[lang];
   const [paying, setPaying] = useState(false);
   const [payError, setPayError] = useState('');
+  const [restoring, setRestoring] = useState(false);
+  const [restoreMsg, setRestoreMsg] = useState('');
 
   const set = (patch: Partial<AppSettings>) =>
     onSettingsChange({ ...settings, ...patch });
@@ -119,6 +129,29 @@ export default function SettingsScreen({ settings, onSettingsChange, deviceId }:
       setPayError(tx.noConnection);
     } finally {
       setPaying(false);
+    }
+  };
+
+  const handleRestore = async () => {
+    setRestoring(true);
+    setRestoreMsg('');
+    try {
+      const res = await fetch(`${API_BASE}/api/subscription/restore`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deviceId: deviceId || '' }),
+      });
+      const data = await res.json();
+      if (data.activated) {
+        setRestoreMsg(tx.restoreOk);
+        setTimeout(() => window.location.reload(), 1500);
+      } else {
+        setRestoreMsg(tx.restoreNone);
+      }
+    } catch {
+      setRestoreMsg(tx.noConnection);
+    } finally {
+      setRestoring(false);
     }
   };
 
@@ -366,6 +399,27 @@ export default function SettingsScreen({ settings, onSettingsChange, deviceId }:
             {payError && (
               <p style={{ textAlign: 'center', fontSize: '13px', color: '#f87171', margin: '4px 0 0' }}>
                 {payError}
+              </p>
+            )}
+            {/* Restore subscription */}
+            <button
+              onClick={handleRestore}
+              disabled={restoring}
+              style={{
+                width: '100%', padding: '12px', fontSize: '13px', fontWeight: '500',
+                background: 'transparent', border: 'none',
+                color: 'var(--text-dim)', cursor: restoring ? 'not-allowed' : 'pointer',
+                opacity: restoring ? 0.6 : 1,
+              }}
+            >
+              {restoring ? tx.restoring : tx.restoreBtn}
+            </button>
+            {restoreMsg && (
+              <p style={{
+                textAlign: 'center', fontSize: '13px', margin: '0',
+                color: restoreMsg === tx.restoreOk ? '#4ade80' : '#f87171',
+              }}>
+                {restoreMsg}
               </p>
             )}
           </div>
