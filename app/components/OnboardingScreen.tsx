@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface Props {
   onDone: () => void;
@@ -24,11 +24,23 @@ const slides = [
     subtitle: 'Символы, толкования и\nсюрреалистичная визуализация',
     color: 'rgba(96, 165, 250, 0.3)',
   },
+  {
+    emoji: '📲',
+    title: 'Добавь на\nэкран домой',
+    subtitle: '',
+    color: 'rgba(52, 211, 153, 0.3)',
+  },
 ];
 
 export default function OnboardingScreen({ onDone }: Props) {
   const [current, setCurrent] = useState(0);
   const [animating, setAnimating] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+
+  useEffect(() => {
+    const ua = navigator.userAgent;
+    setIsIOS(/iPhone|iPad|iPod/.test(ua));
+  }, []);
 
   const next = () => {
     if (animating) return;
@@ -171,6 +183,55 @@ export default function OnboardingScreen({ onDone }: Props) {
             ))}
           </div>
         )}
+
+        {/* Install instructions for slide 4 */}
+        {current === 3 && (
+          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '8px' }}>
+            {isIOS ? (
+              <>
+                <p style={{ textAlign: 'center', fontSize: '14px', color: 'var(--text-muted)', marginBottom: '4px' }}>
+                  Для iPhone / iPad:
+                </p>
+                {[
+                  { icon: '1️⃣', text: 'Открой dreameeer.ru в Safari' },
+                  { icon: '2️⃣', text: 'Нажми кнопку "Поделиться" (квадрат со стрелкой вверх) внизу экрана' },
+                  { icon: '3️⃣', text: 'Выбери "На экран «Домой»"' },
+                  { icon: '4️⃣', text: 'Нажми "Добавить" — готово!' },
+                ].map(step => (
+                  <div key={step.icon} style={{
+                    display: 'flex', alignItems: 'center', gap: '14px',
+                    background: 'rgba(255,255,255,0.05)',
+                    borderRadius: '14px', padding: '12px 16px',
+                  }}>
+                    <span style={{ fontSize: '22px', flexShrink: 0 }}>{step.icon}</span>
+                    <span style={{ fontSize: '14px', color: 'var(--text-muted)', lineHeight: 1.4 }}>{step.text}</span>
+                  </div>
+                ))}
+              </>
+            ) : (
+              <>
+                <p style={{ textAlign: 'center', fontSize: '14px', color: 'var(--text-muted)', marginBottom: '4px' }}>
+                  Для Android / Chrome:
+                </p>
+                {[
+                  { icon: '1️⃣', text: 'Открой dreameeer.ru в Chrome' },
+                  { icon: '2️⃣', text: 'Нажми три точки ⋮ в правом верхнем углу' },
+                  { icon: '3️⃣', text: 'Выбери "Добавить на главный экран"' },
+                  { icon: '4️⃣', text: 'Нажми "Добавить" — готово!' },
+                ].map(step => (
+                  <div key={step.icon} style={{
+                    display: 'flex', alignItems: 'center', gap: '14px',
+                    background: 'rgba(255,255,255,0.05)',
+                    borderRadius: '14px', padding: '12px 16px',
+                  }}>
+                    <span style={{ fontSize: '22px', flexShrink: 0 }}>{step.icon}</span>
+                    <span style={{ fontSize: '14px', color: 'var(--text-muted)', lineHeight: 1.4 }}>{step.text}</span>
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Bottom */}
@@ -203,7 +264,7 @@ export default function OnboardingScreen({ onDone }: Props) {
             fontSize: '17px',
           }}
         >
-          {current < slides.length - 1 ? 'Далее →' : '🌙 Начать'}
+          {current < slides.length - 1 ? 'Далее →' : '🌙 Начать толковать сны'}
         </button>
       </div>
     </div>
