@@ -352,18 +352,6 @@ export default function SettingsScreen({ settings, onSettingsChange, deviceId, i
               </div>
               <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{tx.proSubtitle}</p>
             </div>
-            <div style={{
-              background: 'linear-gradient(135deg, #fbbf24, #f97316)',
-              borderRadius: '100px',
-              padding: '4px 10px',
-              fontSize: '11px',
-              fontWeight: '700',
-              color: 'white',
-              whiteSpace: 'nowrap',
-              flexShrink: 0,
-            }}>
-              {tx.trialBadge}
-            </div>
           </div>
 
           {/* Price */}
