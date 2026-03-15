@@ -3,7 +3,7 @@ import { useState } from 'react';
 import type { CSSProperties } from 'react';
 import type { AppSettings } from '../page';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://dreameeer-backend-production.up.railway.app';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.dreameeer.ru';
 
 interface Props {
   settings: AppSettings;

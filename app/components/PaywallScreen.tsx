@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://dreameeer-backend-production.up.railway.app';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.dreameeer.ru';
 
 interface PaywallScreenProps {
   settings?: { theme?: string; language?: string };

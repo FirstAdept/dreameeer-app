@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import type { DreamAnalysis, DreamRecord } from '../page';
 
-const BACKEND_URL = 'https://dreameeer-backend-production.up.railway.app';
+const BACKEND_URL = 'https://api.dreameeer.ru';
 
 interface Props {
   dreamText: string;

@@ -44,7 +44,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   interpretMode: 'default',
 };
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://dreameeer-backend-production.up.railway.app';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.dreameeer.ru';
 const FREE_LIMIT = 1;
 
 function generateDeviceId(): string {

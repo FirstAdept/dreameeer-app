@@ -9,7 +9,7 @@ declare global {
   }
 }
 
-const BACKEND_URL = 'https://dreameeer-backend-production.up.railway.app';
+const BACKEND_URL = 'https://api.dreameeer.ru';
 
 const tx = {
   ru: {
@@ -339,12 +339,12 @@ export default function HomeScreen({ onAnalysisComplete, onSubscriptionRequired,
             text: settings.language === 'ru'
               ? '🌙 Попробуй Dreameeer — ИИ толкует сны и создаёт видео-визуализации!'
               : '🌙 Try Dreameeer — AI interprets your dreams and creates video visualizations!',
-            url: 'https://dreameeer-app.vercel.app',
+            url: 'https://dreameeer.ru',
           };
           if (navigator.share) {
             navigator.share(shareData).catch(() => {});
           } else {
-            navigator.clipboard?.writeText('https://dreameeer-app.vercel.app').then(() => {
+            navigator.clipboard?.writeText('https://dreameeer.ru').then(() => {
               alert(settings.language === 'ru' ? 'Ссылка скопирована!' : 'Link copied!');
             });
           }
