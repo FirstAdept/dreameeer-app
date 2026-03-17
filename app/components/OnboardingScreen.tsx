@@ -24,41 +24,11 @@ const slides = [
     subtitle: 'Символы, толкования и\nсюрреалистичная визуализация',
     color: 'rgba(96, 165, 250, 0.3)',
   },
-  {
-    emoji: '📲',
-    title: 'Добавь на\nэкран домой',
-    subtitle: '',
-    color: 'rgba(52, 211, 153, 0.3)',
-  },
 ];
 
 export default function OnboardingScreen({ onDone }: Props) {
   const [current, setCurrent] = useState(0);
   const [animating, setAnimating] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
-  const [installPrompt, setInstallPrompt] = useState<any>(null);
-  const [installed, setInstalled] = useState(false);
-
-  useEffect(() => {
-    const ua = navigator.userAgent;
-    setIsIOS(/iPhone|iPad|iPod/.test(ua));
-
-    const handler = (e: Event) => {
-      e.preventDefault();
-      setInstallPrompt(e);
-    };
-    window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
-  }, []);
-
-  const handleInstall = async () => {
-    if (installPrompt) {
-      installPrompt.prompt();
-      const { outcome } = await installPrompt.userChoice;
-      if (outcome === 'accepted') setInstalled(true);
-      setInstallPrompt(null);
-    }
-  };
 
   const next = () => {
     if (animating) return;
@@ -202,64 +172,6 @@ export default function OnboardingScreen({ onDone }: Props) {
           </div>
         )}
 
-        {/* Install button for slide 4 */}
-        {current === 3 && (
-          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '8px' }}>
-            {installed ? (
-              <div style={{
-                textAlign: 'center', padding: '16px',
-                background: 'rgba(74,222,128,0.1)',
-                border: '1px solid rgba(74,222,128,0.3)',
-                borderRadius: '16px', fontSize: '16px', fontWeight: '600', color: '#4ade80',
-              }}>
-                ✅ Добавлено на экран домой!
-              </div>
-            ) : installPrompt ? (
-              /* Android/Chrome — показываем кнопку установки */
-              <button
-                onClick={handleInstall}
-                style={{
-                  width: '100%', padding: '18px',
-                  background: 'linear-gradient(135deg, #34d399, #059669)',
-                  border: 'none', borderRadius: '16px',
-                  fontSize: '17px', fontWeight: '700', color: 'white',
-                  cursor: 'pointer', display: 'flex', alignItems: 'center',
-                  justifyContent: 'center', gap: '10px',
-                }}
-              >
-                📲 Добавить на экран домой
-              </button>
-            ) : isIOS ? (
-              /* iOS — инструкция для Safari */
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {[
-                  { icon: '1', text: 'Открой dreameeer.ru в Safari' },
-                  { icon: '2', text: 'Нажми кнопку  внизу экрана' },
-                  { icon: '3', text: 'Выбери "На экран «Домой»"' },
-                ].map(step => (
-                  <div key={step.icon} style={{
-                    display: 'flex', alignItems: 'center', gap: '14px',
-                    background: 'rgba(255,255,255,0.05)',
-                    borderRadius: '14px', padding: '12px 16px',
-                  }}>
-                    <div style={{
-                      width: '28px', height: '28px', borderRadius: '50%', flexShrink: 0,
-                      background: 'linear-gradient(135deg, #34d399, #059669)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: '13px', fontWeight: '800', color: 'white',
-                    }}>{step.icon}</div>
-                    <span style={{ fontSize: '14px', color: 'var(--text-muted)', lineHeight: 1.4 }}>{step.text}</span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              /* Desktop/другой браузер */
-              <p style={{ textAlign: 'center', fontSize: '14px', color: 'var(--text-muted)', lineHeight: 1.6 }}>
-                Открой <strong style={{ color: 'var(--text)' }}>dreameeer.ru</strong> в Chrome на телефоне и нажми ⋮ → «Добавить на главный экран»
-              </p>
-            )}
-          </div>
-        )}
       </div>
 
       {/* Bottom */}
