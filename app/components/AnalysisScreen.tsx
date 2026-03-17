@@ -11,6 +11,8 @@ interface Props {
   imageUrl: string | null;
   onBack: () => void;
   settings?: any;
+  deviceId?: string;
+  isSubscribed?: boolean;
 }
 
 const moodEmoji: Record<string, string> = {
@@ -44,11 +46,13 @@ function saveToDiary(dreamText: string, analysis: DreamAnalysis, imageUrl?: stri
   } catch {}
 }
 
-export default function AnalysisScreen({ dreamText, analysis, videoTaskId, imageUrl, onBack, settings }: Props) {
+export default function AnalysisScreen({ dreamText, analysis, videoTaskId, imageUrl, onBack, settings, deviceId, isSubscribed }: Props) {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [videoStatus, setVideoStatus] = useState<'idle' | 'polling' | 'done' | 'failed'>(
     videoTaskId ? 'polling' : 'idle'
   );
+  const [activeTaskId, setActiveTaskId] = useState<string | null>(videoTaskId);
+  const [creating, setCreating] = useState(false);
   const [selectedSymbol, setSelectedSymbol] = useState<number | null>(null);
   const [saved, setSaved] = useState(false);
   const lang = settings?.language || 'ru';
@@ -65,9 +69,11 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
       video: 'Видео-анимация',
       dreamTextLabel: 'Текст сна',
       generating: 'Генерируем анимацию...',
-      generatingTime: 'Обычно 1–3 минуты',
+      generatingTime: 'Обычно 2–4 минуты',
       videoFailed: '⚠️ Видео не удалось сгенерировать',
       videoUnavailable: '🎬 Видео недоступно',
+      createVideo: '🎬 Создать видео',
+      createVideoSub: 'Анимация сна · ~3 мин',
     },
     en: {
       back: '← Back',
@@ -80,9 +86,11 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
       video: 'Video Animation',
       dreamTextLabel: 'Dream Text',
       generating: 'Generating animation...',
-      generatingTime: 'Usually 1–3 minutes',
+      generatingTime: 'Usually 2–4 minutes',
       videoFailed: '⚠️ Video generation failed',
       videoUnavailable: '🎬 Video unavailable',
+      createVideo: '🎬 Create Video',
+      createVideoSub: 'Dream animation · ~3 min',
     },
   };
   const t = tx[lang as 'ru' | 'en'] || tx.ru;
@@ -93,15 +101,43 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
     setSaved(true);
   }, []);
 
+  const handleCreateVideo = async () => {
+    if (!analysis.videoPrompt || creating) return;
+    setCreating(true);
+    setVideoStatus('polling');
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/dream/video/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          videoPrompt: analysis.videoPrompt,
+          theme: settings?.theme || 'dark',
+          mood: analysis.mood || '',
+          deviceId: deviceId || '',
+        }),
+      });
+      const data = await res.json();
+      if (data.taskId) {
+        setActiveTaskId(data.taskId);
+      } else {
+        setVideoStatus('failed');
+      }
+    } catch {
+      setVideoStatus('failed');
+    } finally {
+      setCreating(false);
+    }
+  };
+
   // Poll video status
   useEffect(() => {
-    if (!videoTaskId) return;
+    if (!activeTaskId) return;
     let attempts = 0;
     const max = 75;
 
     const poll = async () => {
       try {
-        const res = await fetch(`${BACKEND_URL}/api/dream/video/${videoTaskId}`);
+        const res = await fetch(`${BACKEND_URL}/api/dream/video/${activeTaskId}`);
         const data = await res.json();
 
         if (data.status === 'completed' && data.videoUrl) {
@@ -126,7 +162,7 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
 
     const timer = setTimeout(poll, 5000);
     return () => clearTimeout(timer);
-  }, [videoTaskId]);
+  }, [activeTaskId]);
 
   const scoreColor = analysis.lucidityScore >= 8
     ? '#34d399'
@@ -369,12 +405,35 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
             </div>
           )}
 
-          {videoStatus === 'idle' && !videoTaskId && (
-            <div className="card" style={{ padding: '16px', textAlign: 'center' }}>
-              <div style={{ color: 'var(--text-dim)', fontSize: '13px' }}>
-                {t.videoUnavailable}
-              </div>
-            </div>
+          {videoStatus === 'idle' && !activeTaskId && (
+            <button
+              onClick={handleCreateVideo}
+              disabled={creating || !analysis.videoPrompt}
+              style={{
+                width: '100%',
+                padding: '18px',
+                borderRadius: '18px',
+                background: creating
+                  ? 'rgba(255,255,255,0.06)'
+                  : 'linear-gradient(135deg, rgba(139,92,246,0.25), rgba(168,85,247,0.15))',
+                border: creating
+                  ? '1px solid rgba(255,255,255,0.1)'
+                  : '1px solid rgba(139,92,246,0.4)',
+                color: creating ? 'var(--text-dim)' : 'var(--text)',
+                cursor: creating ? 'not-allowed' : 'pointer',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '4px',
+              }}
+            >
+              <span style={{ fontSize: '15px', fontWeight: '700' }}>
+                {creating ? '...' : t.createVideo}
+              </span>
+              <span style={{ fontSize: '12px', color: 'var(--text-dim)' }}>
+                {t.createVideoSub}
+              </span>
+            </button>
           )}
         </div>
 

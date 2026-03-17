@@ -235,6 +235,8 @@ export default function App() {
             imageUrl={currentImageUrl}
             onBack={() => setScreen('home')}
             settings={settings}
+            deviceId={deviceId}
+            isSubscribed={isSubscribed}
           />
         )}
         {screen === 'diary' && <DiaryScreen settings={settings} />}
