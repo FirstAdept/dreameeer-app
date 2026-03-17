@@ -53,6 +53,7 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
   );
   const [activeTaskId, setActiveTaskId] = useState<string | null>(videoTaskId);
   const [creating, setCreating] = useState(false);
+  const [videoLimitError, setVideoLimitError] = useState<string | null>(null);
   const [selectedSymbol, setSelectedSymbol] = useState<number | null>(null);
   const [saved, setSaved] = useState(false);
   const lang = settings?.language || 'ru';
@@ -117,7 +118,14 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
         }),
       });
       const data = await res.json();
-      if (data.taskId) {
+      if (res.status === 429 || data.error === 'video_limit_reached') {
+        setVideoStatus('idle');
+        setVideoLimitError(lang === 'ru'
+          ? `Лимит видео на этот месяц исчерпан (10/мес). Обновится 1-го числа.`
+          : `Monthly video limit reached (10/month). Resets on the 1st.`
+        );
+      } else if (data.taskId) {
+        setVideoLimitError(null);
         setActiveTaskId(data.taskId);
       } else {
         setVideoStatus('failed');
@@ -405,10 +413,16 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
             </div>
           )}
 
+          {videoLimitError && (
+            <div style={{ textAlign: 'center', color: 'rgba(239,68,68,0.85)', fontSize: '13px', padding: '8px 0 4px' }}>
+              {videoLimitError}
+            </div>
+          )}
+
           {videoStatus === 'idle' && !activeTaskId && (
             <button
               onClick={handleCreateVideo}
-              disabled={creating || !analysis.videoPrompt}
+              disabled={creating || !analysis.videoPrompt || !!videoLimitError}
               style={{
                 width: '100%',
                 padding: '18px',
