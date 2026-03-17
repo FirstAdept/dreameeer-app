@@ -83,12 +83,6 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
   }, []);
 
 
-  const scoreColor = analysis.lucidityScore >= 8
-    ? '#34d399'
-    : analysis.lucidityScore >= 5
-      ? '#a78bfa'
-      : '#f472b6';
-
   return (
     <div className="screen" style={{ minHeight: '100vh' }}>
       {/* Header */}
@@ -146,15 +140,6 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
           <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
             <span className={`mood-badge mood-${analysis.mood}`}>
               {moodEmoji[analysis.mood]} {analysis.mood}
-            </span>
-            <span style={{
-              display: 'inline-flex', alignItems: 'center', gap: '6px',
-              padding: '6px 14px', borderRadius: '100px',
-              background: `${scoreColor}20`,
-              border: `1px solid ${scoreColor}40`,
-              fontSize: '13px', fontWeight: '600', color: scoreColor,
-            }}>
-              🔆 {analysis.lucidityScore}/10
             </span>
           </div>
         </div>

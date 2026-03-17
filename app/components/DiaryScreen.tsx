@@ -119,19 +119,8 @@ export default function DiaryScreen({ settings }: { settings?: any }) {
                   </p>
                 </div>
                 <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <div style={{ fontSize: '12px', color: 'var(--text-dim)', marginBottom: '4px' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--text-dim)' }}>
                     {formatDate(dream.date)}
-                  </div>
-                  <div style={{
-                    fontSize: '11px',
-                    background: 'rgba(167,139,250,0.1)',
-                    border: '1px solid rgba(167,139,250,0.2)',
-                    borderRadius: '6px',
-                    padding: '3px 8px',
-                    color: 'var(--purple)',
-                    fontWeight: '600',
-                  }}>
-                    {dream.analysis.lucidityScore}/10
                   </div>
                 </div>
               </div>
@@ -172,12 +161,72 @@ export default function DiaryScreen({ settings }: { settings?: any }) {
 
                   {/* Image if available */}
                   {dream.imageUrl && (
-                    <div style={{ marginTop: '12px', borderRadius: '14px', overflow: 'hidden', border: '1px solid var(--border)' }}>
-                      <img
-                        src={dream.imageUrl}
-                        alt="Визуализация сна"
-                        style={{ width: '100%', display: 'block' }}
-                      />
+                    <div style={{ marginTop: '12px' }}>
+                      <style>{`
+                        @keyframes diaryDreamZoom {
+                          0%   { transform: scale(1.0) translate(0%, 0%); }
+                          30%  { transform: scale(1.07) translate(-1%, -0.8%); }
+                          60%  { transform: scale(1.1)  translate(0.8%, -1.2%); }
+                          100% { transform: scale(1.0) translate(0%, 0%); }
+                        }
+                        @keyframes diaryDreamHaze {
+                          0%, 100% { opacity: 0; }
+                          40%, 60% { opacity: 1; }
+                        }
+                        @keyframes diaryDreamGlowDark {
+                          0%, 100% { box-shadow: 0 0 24px rgba(139,92,246,0.15), 0 8px 40px rgba(0,0,0,0.4); }
+                          50%       { box-shadow: 0 0 80px rgba(139,92,246,0.55), 0 8px 60px rgba(109,40,217,0.25); }
+                        }
+                        @keyframes diaryDreamGlowLight {
+                          0%, 100% { box-shadow: 0 0 24px rgba(251,146,60,0.15), 0 8px 32px rgba(0,0,0,0.1); }
+                          50%       { box-shadow: 0 0 80px rgba(251,146,60,0.5), 0 8px 60px rgba(251,146,60,0.2); }
+                        }
+                      `}</style>
+                      <div style={{
+                        borderRadius: '14px',
+                        overflow: 'hidden',
+                        border: '1px solid var(--border)',
+                        position: 'relative',
+                        animation: settings?.theme === 'light' ? 'diaryDreamGlowLight 8s ease-in-out infinite' : 'diaryDreamGlowDark 8s ease-in-out infinite',
+                      }}>
+                        <img
+                          src={dream.imageUrl}
+                          alt="Визуализация сна"
+                          style={{
+                            width: '100%',
+                            display: 'block',
+                            animation: 'diaryDreamZoom 12s ease-in-out infinite',
+                            transformOrigin: 'center center',
+                            willChange: 'transform',
+                          }}
+                        />
+                        <img
+                          src={dream.imageUrl}
+                          alt=""
+                          aria-hidden="true"
+                          style={{
+                            position: 'absolute',
+                            inset: 0,
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            filter: 'blur(18px) saturate(1.6) brightness(1.1)',
+                            animation: 'diaryDreamHaze 8s ease-in-out infinite',
+                            opacity: 0,
+                            pointerEvents: 'none',
+                          }}
+                        />
+                        <div style={{
+                          position: 'absolute',
+                          inset: 0,
+                          background: settings?.theme === 'light'
+                            ? 'linear-gradient(135deg, rgba(251,146,60,0.3) 0%, rgba(236,72,153,0.15) 50%, rgba(251,191,36,0.2) 100%)'
+                            : 'linear-gradient(135deg, rgba(139,92,246,0.35) 0%, rgba(59,130,246,0.15) 50%, rgba(236,72,153,0.2) 100%)',
+                          animation: 'diaryDreamHaze 8s ease-in-out infinite',
+                          opacity: 0,
+                          pointerEvents: 'none',
+                        }} />
+                      </div>
                     </div>
                   )}
 

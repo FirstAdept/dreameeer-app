@@ -73,10 +73,10 @@ export default function AdminPage() {
       {/* Stats */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', marginBottom: '32px' }}>
         {[
-          { label: 'Пользователей', value: stats.totalUsers ?? '—', icon: '👤' },
-          { label: 'PRO подписок', value: stats.subscribers ?? '—', icon: '💎' },
-          { label: 'Снов всего', value: stats.totalDreams ?? dreams.length, icon: '🌙' },
-          { label: 'За 7 дней', value: stats.recentDreams ?? '—', icon: '📅' },
+          { label: 'Пользователей', value: (stats as any).users?.total ?? stats.totalUsers ?? '—', icon: '👤' },
+          { label: 'PRO подписок', value: (stats as any).users?.subscribers ?? stats.subscribers ?? '—', icon: '💎' },
+          { label: 'Снов всего', value: (stats as any).dreams?.total ?? stats.totalDreams ?? dreams.length, icon: '🌙' },
+          { label: 'За 7 дней', value: (stats as any).dreams?.recent ?? stats.recentDreams ?? '—', icon: '📅' },
         ].map(s => (
           <div key={s.label} style={{
             background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
