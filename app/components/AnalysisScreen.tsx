@@ -378,7 +378,7 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
           )}
         </div>
 
-        <div style={{ paddingBottom: '20px' }} />
+        <div style={{ paddingBottom: '100px' }} />
       </div>
     </div>
   );

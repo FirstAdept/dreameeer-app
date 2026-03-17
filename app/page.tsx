@@ -203,7 +203,7 @@ export default function App() {
     );
   }
 
-  const showTabs = screen !== 'onboarding' && screen !== 'analysis';
+  const showTabs = screen !== 'onboarding';
 
   return (
     <div className="app-container">
