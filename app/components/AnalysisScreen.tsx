@@ -131,8 +131,8 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
       if (res.status === 429 || data.error === 'video_limit_reached') {
         setVideoStatus('idle');
         setVideoLimitError(lang === 'ru'
-          ? `Лимит видео на этот месяц исчерпан (10/мес). Обновится 1-го числа.`
-          : `Monthly video limit reached (10/month). Resets on the 1st.`
+          ? `Лимит видео на этот месяц исчерпан (30/мес). Обновится 1-го числа.`
+          : `Monthly video limit reached (30/month). Resets on the 1st.`
         );
       } else if (data.taskId) {
         setVideoLimitError(null);
