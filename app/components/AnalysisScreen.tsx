@@ -73,11 +73,11 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
       video: 'Видео-анимация',
       dreamTextLabel: 'Текст сна',
       generating: 'Генерируем анимацию...',
-      generatingTime: 'Обычно 2–4 минуты',
+      generatingTime: 'Обычно 30–90 секунд',
       videoFailed: '⚠️ Видео не удалось сгенерировать',
       videoUnavailable: '🎬 Видео недоступно',
       createVideo: '🎬 Создать видео',
-      createVideoSub: 'Анимация сна · ~3 мин',
+      createVideoSub: 'Анимация сна · ~1 мин',
       boomerang: '🔁 Boomerang',
       boomerangSub: 'Анимация туда-обратно',
       boomerangLoading: 'Создаём loop...',
@@ -93,11 +93,11 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
       video: 'Video Animation',
       dreamTextLabel: 'Dream Text',
       generating: 'Generating animation...',
-      generatingTime: 'Usually 2–4 minutes',
+      generatingTime: 'Usually 30–90 seconds',
       videoFailed: '⚠️ Video generation failed',
       videoUnavailable: '🎬 Video unavailable',
       createVideo: '🎬 Create Video',
-      createVideoSub: 'Dream animation · ~3 min',
+      createVideoSub: 'Dream animation · ~1 min',
       boomerang: '🔁 Boomerang',
       boomerangSub: 'Forward-backward loop',
       boomerangLoading: 'Creating loop...',
@@ -352,9 +352,54 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
             <span style={{ fontSize: '20px' }}>🔮</span>
             <h3 style={{ fontSize: '16px', fontWeight: '700' }}>{t.interpretation}</h3>
           </div>
-          <p style={{ color: 'var(--text-muted)', fontSize: '15px', lineHeight: 1.7 }}>
-            {analysis.interpretation}
-          </p>
+
+          {/* Режим "Все сонники" — несколько блоков */}
+          {analysis.interpretations && analysis.interpretations.length > 0 ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              {analysis.interpretations.map((item, i) => (
+                <div key={i} style={{
+                  padding: '14px 16px',
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid var(--border-subtle)',
+                  borderRadius: '14px',
+                  borderLeft: '3px solid var(--purple)',
+                }}>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: 1.7, marginBottom: '8px' }}>
+                    {item.text}
+                  </p>
+                  <div style={{
+                    fontSize: '11px',
+                    fontWeight: '700',
+                    letterSpacing: '0.6px',
+                    textTransform: 'uppercase',
+                    color: 'var(--purple)',
+                    opacity: 0.8,
+                  }}>
+                    {item.source}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            /* Одиночный режим — один текст + подпись */
+            <div>
+              <p style={{ color: 'var(--text-muted)', fontSize: '15px', lineHeight: 1.7, marginBottom: analysis.interpretSource ? '10px' : '0' }}>
+                {analysis.interpretation}
+              </p>
+              {analysis.interpretSource && (
+                <div style={{
+                  fontSize: '11px',
+                  fontWeight: '700',
+                  letterSpacing: '0.6px',
+                  textTransform: 'uppercase',
+                  color: 'var(--purple)',
+                  opacity: 0.8,
+                }}>
+                  {analysis.interpretSource}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* 6. Recommendation */}

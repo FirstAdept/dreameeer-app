@@ -23,6 +23,8 @@ export interface DreamAnalysis {
   mood: string;
   symbols: { name: string; emoji: string; meaning: string }[];
   interpretation: string;
+  interpretSource?: string;
+  interpretations?: { source: string; text: string }[];
   recommendation: string;
   videoPrompt: string;
   lucidityScore: number;
