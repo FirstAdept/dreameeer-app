@@ -35,7 +35,7 @@ const t = {
     price: '499 ₽',
     pricePeriod: '/ месяц',
     proFeatures: [
-      '30 видео-анимаций в месяц',
+      '10 видео-анимаций в месяц',
       'Неограниченный анализ снов',
       'Все стили толкования',
       'Дневник без ограничений',
@@ -84,7 +84,7 @@ const t = {
     price: '499 ₽',
     pricePeriod: '/ month',
     proFeatures: [
-      '30 video animations per month',
+      '10 video animations per month',
       'Unlimited dream analysis',
       'All interpretation styles',
       'Unlimited dream diary',

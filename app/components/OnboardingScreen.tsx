@@ -24,6 +24,12 @@ const slides = [
     subtitle: 'Символы, толкования и\nсюрреалистичная визуализация',
     color: 'rgba(96, 165, 250, 0.3)',
   },
+  {
+    emoji: '🎨',
+    title: 'Два стиля\nвизуализации',
+    subtitle: 'Переключай тему — и весь стиль\nвизуализации изменится',
+    color: 'rgba(251, 146, 60, 0.25)',
+  },
 ];
 
 export default function OnboardingScreen({ onDone }: Props) {
@@ -169,6 +175,69 @@ export default function OnboardingScreen({ onDone }: Props) {
                 {tag}
               </span>
             ))}
+          </div>
+        )}
+
+        {/* Theme preview for slide 4 */}
+        {current === 3 && (
+          <div style={{ display: 'flex', gap: '12px', width: '100%', marginTop: '4px' }}>
+            {/* Dark card */}
+            <div style={{
+              flex: 1,
+              borderRadius: '20px',
+              background: 'linear-gradient(160deg, #0d0020 0%, #1a0040 100%)',
+              border: '1px solid rgba(167,139,250,0.25)',
+              padding: '16px 14px',
+              display: 'flex', flexDirection: 'column', gap: '8px',
+            }}>
+              <div style={{ fontSize: '22px' }}>🌑</div>
+              <div style={{ fontSize: '13px', fontWeight: '700', color: '#e2d9f3' }}>Тёмная</div>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.4 }}>
+                Кинематографичный стиль · объект в фокусе · мистические тона
+              </div>
+              <div style={{ display: 'flex', gap: '4px', marginTop: '2px' }}>
+                {['#2d0060','#7c3aed','#4f1b96'].map(c => (
+                  <div key={c} style={{ width: '16px', height: '16px', borderRadius: '50%', background: c }} />
+                ))}
+              </div>
+            </div>
+            {/* Light card */}
+            <div style={{
+              flex: 1,
+              borderRadius: '20px',
+              background: 'linear-gradient(160deg, #fff8f0 0%, #ffe4c8 100%)',
+              border: '1px solid rgba(251,146,60,0.3)',
+              padding: '16px 14px',
+              display: 'flex', flexDirection: 'column', gap: '8px',
+            }}>
+              <div style={{ fontSize: '22px' }}>☀️</div>
+              <div style={{ fontSize: '13px', fontWeight: '700', color: '#7c2d12' }}>Светлая</div>
+              <div style={{ fontSize: '11px', color: 'rgba(0,0,0,0.45)', lineHeight: 1.4 }}>
+                Мультяшный стиль · мягкий свет · тёплая палитра
+              </div>
+              <div style={{ display: 'flex', gap: '4px', marginTop: '2px' }}>
+                {['#fb923c','#fbbf24','#f472b6'].map(c => (
+                  <div key={c} style={{ width: '16px', height: '16px', borderRadius: '50%', background: c }} />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Theme switch hint for slide 4 */}
+        {current === 3 && (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '10px',
+            background: 'rgba(255,255,255,0.05)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: '14px', padding: '12px 16px',
+            width: '100%',
+          }}>
+            <span style={{ fontSize: '20px' }}>⚙️</span>
+            <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.4 }}>
+              Переключить тему можно в{' '}
+              <strong style={{ color: 'rgba(255,255,255,0.8)' }}>Настройках</strong>
+            </span>
           </div>
         )}
 
