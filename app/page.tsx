@@ -180,11 +180,11 @@ export default function App() {
     setCurrentImageUrl(imageUrl);
     setScreen('analysis');
 
-    // Show install slide after first generation (if not PWA and not shown before)
+    // Show install slide immediately after first generation (if not PWA and not shown before)
     const installShown = localStorage.getItem('dreameeer_install_shown');
     const isInPWA = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
     if (!installShown && !isInPWA) {
-      setTimeout(() => setShowInstallSlide(true), 1500);
+      setShowInstallSlide(true);
     }
   };
 
