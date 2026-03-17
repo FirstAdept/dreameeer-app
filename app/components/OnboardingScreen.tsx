@@ -233,10 +233,11 @@ export default function OnboardingScreen({ onDone }: Props) {
             borderRadius: '14px', padding: '12px 16px',
             width: '100%',
           }}>
-            <span style={{ fontSize: '20px' }}>⚙️</span>
+            <span style={{ fontSize: '20px' }}>☀️🌙</span>
             <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.4 }}>
-              Переключить тему можно в{' '}
-              <strong style={{ color: 'rgba(255,255,255,0.8)' }}>Настройках</strong>
+              Нажми на{' '}
+              <strong style={{ color: 'rgba(255,255,255,0.8)' }}>☀️ или 🌙</strong>
+              {' '}на главном экране чтобы переключить тему
             </span>
           </div>
         )}

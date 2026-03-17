@@ -134,10 +134,17 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
           ? `Лимит видео на этот месяц исчерпан (30/мес). Обновится 1-го числа.`
           : `Monthly video limit reached (30/month). Resets on the 1st.`
         );
+      } else if (res.status === 402 || data.error === 'subscription_required') {
+        setVideoStatus('idle');
+        setVideoLimitError(lang === 'ru'
+          ? `Генерация видео доступна только по подписке.`
+          : `Video generation requires a subscription.`
+        );
       } else if (data.taskId) {
         setVideoLimitError(null);
         setActiveTaskId(data.taskId);
       } else {
+        console.error('Video create error:', res.status, data);
         setVideoStatus('failed');
       }
     } catch {
@@ -210,7 +217,7 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
         justifyContent: 'space-between',
         position: 'sticky',
         top: 0,
-        background: 'rgba(5,5,8,0.85)',
+        background: settings?.theme === 'light' ? 'rgba(255,252,248,0.9)' : 'rgba(5,5,8,0.85)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         zIndex: 10,
@@ -220,7 +227,7 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
         <button
           onClick={onBack}
           style={{
-            background: 'rgba(255,255,255,0.06)',
+            background: settings?.theme === 'light' ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.06)',
             border: '1px solid var(--border-subtle)',
             borderRadius: '12px',
             color: 'var(--text)',
