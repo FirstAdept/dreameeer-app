@@ -8,6 +8,7 @@ import StatsScreen from './components/StatsScreen';
 import SettingsScreen from './components/SettingsScreen';
 import PaywallScreen from './components/PaywallScreen';
 import TabBar from './components/TabBar';
+import InstallSlide from './components/InstallSlide';
 
 export type Screen = 'onboarding' | 'home' | 'analysis' | 'diary' | 'stats' | 'settings';
 
@@ -61,6 +62,7 @@ export default function App() {
   const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null);
   const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
   const [mounted, setMounted] = useState(false);
+  const [showInstallSlide, setShowInstallSlide] = useState(false);
 
   // Subscription state
   const [deviceId, setDeviceId] = useState<string>('');
@@ -177,6 +179,13 @@ export default function App() {
     setCurrentVideoTaskId(videoTaskId);
     setCurrentImageUrl(imageUrl);
     setScreen('analysis');
+
+    // Show install slide after first generation (if not PWA and not shown before)
+    const installShown = localStorage.getItem('dreameeer_install_shown');
+    const isInPWA = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
+    if (!installShown && !isInPWA) {
+      setTimeout(() => setShowInstallSlide(true), 1500);
+    }
   };
 
   const handleSubscriptionRequired = () => {
@@ -237,6 +246,10 @@ export default function App() {
 
       {showTabs && (
         <TabBar current={screen} onChange={(s) => setScreen(s as Screen)} language={settings.language} />
+      )}
+
+      {showInstallSlide && (
+        <InstallSlide onClose={() => setShowInstallSlide(false)} />
       )}
     </div>
   );

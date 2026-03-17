@@ -56,16 +56,6 @@ export default function HomeScreen({ onAnalysisComplete, onSubscriptionRequired,
   const [interimText, setInterimText] = useState('');
   const recognitionRef = useRef<any>(null);
 
-  // Install banner
-  const [showInstallBanner, setShowInstallBanner] = useState(false);
-  useEffect(() => {
-    const dismissed = localStorage.getItem('dreameeer_install_dismissed');
-    if (dismissed) return;
-    const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-    const isInPWA = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
-    if (isIOS && !isInPWA) setShowInstallBanner(true);
-  }, []);
-
   // Theme toggle animation
   const [isAnimating, setIsAnimating] = useState(false);
   const [moonAnim, setMoonAnim] = useState<'idle' | 'switching'>('idle');
@@ -180,36 +170,6 @@ export default function HomeScreen({ onAnalysisComplete, onSubscriptionRequired,
 
   return (
     <div className="screen" style={{ padding: '0 20px', paddingTop: '60px' }}>
-
-      {/* iOS Install Banner */}
-      {showInstallBanner && (
-        <div style={{
-          position: 'fixed', bottom: '80px', left: '16px', right: '16px',
-          background: 'rgba(30, 15, 60, 0.95)',
-          border: '1px solid rgba(167, 139, 250, 0.3)',
-          borderRadius: '16px', padding: '14px 16px',
-          display: 'flex', alignItems: 'center', gap: '12px',
-          zIndex: 1000, backdropFilter: 'blur(12px)',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
-        }}>
-          <span style={{ fontSize: '28px', flexShrink: 0 }}>📲</span>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text)', marginBottom: '2px' }}>
-              Добавь на экран домой
-            </div>
-            <div style={{ fontSize: '12px', color: 'var(--text-dim)', lineHeight: 1.4 }}>
-              Нажми <strong style={{color:'var(--text)'}}>􀈂</strong> → прокрути вниз → <strong style={{color:'var(--text)'}}>«На экран «Домой»»</strong>
-            </div>
-          </div>
-          <button
-            onClick={() => { localStorage.setItem('dreameeer_install_dismissed', '1'); setShowInstallBanner(false); }}
-            style={{
-              background: 'none', border: 'none', color: 'var(--text-dim)',
-              fontSize: '20px', cursor: 'pointer', padding: '4px', flexShrink: 0,
-            }}
-          >✕</button>
-        </div>
-      )}
 
       {/* Theme ripple overlay */}
       {rippleVisible && (
