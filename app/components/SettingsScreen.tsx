@@ -143,6 +143,24 @@ export default function SettingsScreen({ settings, onSettingsChange, deviceId, i
     setRestoring(true);
     setRestoreMsg('');
     try {
+      // Сначала пробуем по сохранённому paymentId
+      const savedPaymentId = localStorage.getItem('dreameeer_pending_payment');
+      if (savedPaymentId && deviceId) {
+        const res = await fetch(`${API_BASE}/api/payment/check`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ deviceId, paymentId: savedPaymentId }),
+        });
+        const data = await res.json();
+        if (data.activated) {
+          localStorage.removeItem('dreameeer_pending_payment');
+          setRestoreMsg(tx.restoreOk);
+          setTimeout(() => window.location.reload(), 1500);
+          return;
+        }
+      }
+
+      // Fallback: поиск по deviceId через ЮKassa
       const res = await fetch(`${API_BASE}/api/subscription/restore`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
