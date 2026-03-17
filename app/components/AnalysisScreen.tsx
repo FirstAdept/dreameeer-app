@@ -103,7 +103,7 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
   }, []);
 
   const handleCreateVideo = async () => {
-    if (!analysis.videoPrompt || creating) return;
+    if (creating) return;
     setCreating(true);
     setVideoStatus('polling');
     try {
@@ -111,7 +111,8 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          videoPrompt: analysis.videoPrompt,
+          videoPrompt: analysis.videoPrompt || '',
+          imageUrl: imageUrl || null,   // ← передаём уже готовую картинку
           theme: settings?.theme || 'dark',
           mood: analysis.mood || '',
           deviceId: deviceId || '',
@@ -422,7 +423,7 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
           {videoStatus === 'idle' && !activeTaskId && (
             <button
               onClick={handleCreateVideo}
-              disabled={creating || !analysis.videoPrompt || !!videoLimitError}
+              disabled={creating || (!analysis.videoPrompt && !imageUrl) || !!videoLimitError}
               style={{
                 width: '100%',
                 padding: '18px',
