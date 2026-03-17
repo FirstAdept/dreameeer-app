@@ -15,7 +15,7 @@ export type Screen = 'onboarding' | 'home' | 'analysis' | 'diary' | 'stats' | 's
 export interface AppSettings {
   theme: 'dark' | 'light';
   language: 'ru' | 'en';
-  interpretMode: 'default' | 'miller' | 'freud' | 'loff';
+  interpretMode: 'default' | 'all' | 'miller' | 'freud' | 'loff';
 }
 
 export interface DreamAnalysis {
@@ -105,6 +105,27 @@ export default function App() {
         const localCount = parseInt(localStorage.getItem('dreameeer_dream_count') || '0', 10);
         setDreamCount(localCount);
       });
+
+    // Resume pending video if app was closed during generation
+    const pendingVideo = localStorage.getItem('dreameeer_pending_video');
+    if (pendingVideo) {
+      try {
+        const pv = JSON.parse(pendingVideo);
+        const age = Date.now() - (pv.savedAt || 0);
+        // If saved less than 15 minutes ago — try to restore
+        if (age < 15 * 60 * 1000 && pv.taskId) {
+          setCurrentDream(pv.dreamText || '');
+          setCurrentAnalysis(pv.analysis);
+          setCurrentImageUrl(pv.imageUrl || null);
+          setCurrentVideoTaskId(pv.taskId);
+          setScreen('analysis');
+        } else {
+          localStorage.removeItem('dreameeer_pending_video');
+        }
+      } catch {
+        localStorage.removeItem('dreameeer_pending_video');
+      }
+    }
 
     // Handle return from payment — dual strategy: direct check + webhook poll
     const params = new URLSearchParams(window.location.search);

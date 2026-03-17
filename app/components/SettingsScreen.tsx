@@ -24,6 +24,7 @@ const t = {
     interpretMode: 'Стиль толкования',
     modes: {
       default: { label: 'Классический', desc: 'Юнг · Фрейд · Ванга · Миллер' },
+      all: { label: 'Все сонники', desc: 'Миллер + Фрейд + Лофф + Юнг вместе' },
       miller: { label: 'Соннник Миллера', desc: 'Практические предсказания событий' },
       freud: { label: 'Метод Фрейда', desc: 'Подсознание, желания, символы либидо' },
       loff: { label: 'Метод Лоффа', desc: 'Личностный рост и самопознание' },
@@ -73,6 +74,7 @@ const t = {
     interpretMode: 'Interpretation Style',
     modes: {
       default: { label: 'Classic', desc: 'Jung · Freud · Vanga · Miller' },
+      all: { label: 'All Dream Books', desc: 'Miller + Freud + Loff + Jung combined' },
       miller: { label: "Miller's Dream Book", desc: 'Practical life predictions' },
       freud: { label: "Freud's Method", desc: 'Subconscious desires & symbols' },
       loff: { label: "Loff's Method", desc: 'Personal growth & self-discovery' },
@@ -332,12 +334,12 @@ export default function SettingsScreen({ settings, onSettingsChange, deviceId, i
       <div style={sectionStyle}>
         <p style={labelStyle}>{tx.interpretMode}</p>
         <div style={rowStyle}>
-          {(['default', 'miller', 'freud', 'loff'] as const).map((mode, i) => (
+          {(['default', 'all', 'miller', 'freud', 'loff'] as const).map((mode, i) => (
             <div key={mode}>
               {i > 0 && <div style={dividerStyle} />}
               <div style={itemStyle(settings.interpretMode === mode)} onClick={() => set({ interpretMode: mode })}>
                 <span style={{ fontSize: '22px' }}>
-                  {mode === 'default' ? '🔮' : mode === 'miller' ? '📖' : mode === 'freud' ? '🧠' : '🌱'}
+                  {mode === 'default' ? '🔮' : mode === 'all' ? '📚' : mode === 'miller' ? '📖' : mode === 'freud' ? '🧠' : '🌱'}
                 </span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: '600', fontSize: '15px', color: 'var(--text)' }}>

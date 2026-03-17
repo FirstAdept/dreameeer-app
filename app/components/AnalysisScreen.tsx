@@ -54,6 +54,9 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
   const [activeTaskId, setActiveTaskId] = useState<string | null>(videoTaskId);
   const [creating, setCreating] = useState(false);
   const [videoLimitError, setVideoLimitError] = useState<string | null>(null);
+  const [boomerang, setBoomerang] = useState(false);
+  const [boomerangUrl, setBoomerangUrl] = useState<string | null>(null);
+  const [boomerangLoading, setBoomerangLoading] = useState(false);
   const [selectedSymbol, setSelectedSymbol] = useState<number | null>(null);
   const [saved, setSaved] = useState(false);
   const lang = settings?.language || 'ru';
@@ -75,6 +78,9 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
       videoUnavailable: '🎬 Видео недоступно',
       createVideo: '🎬 Создать видео',
       createVideoSub: 'Анимация сна · ~3 мин',
+      boomerang: '🔁 Boomerang',
+      boomerangSub: 'Анимация туда-обратно',
+      boomerangLoading: 'Создаём loop...',
     },
     en: {
       back: '← Back',
@@ -92,6 +98,9 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
       videoUnavailable: '🎬 Video unavailable',
       createVideo: '🎬 Create Video',
       createVideoSub: 'Dream animation · ~3 min',
+      boomerang: '🔁 Boomerang',
+      boomerangSub: 'Forward-backward loop',
+      boomerangLoading: 'Creating loop...',
     },
   };
   const t = tx[lang as 'ru' | 'en'] || tx.ru;
@@ -138,9 +147,18 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
     }
   };
 
-  // Poll video status
+  // Poll video status + background save via localStorage
   useEffect(() => {
     if (!activeTaskId) return;
+    // Сохраняем taskId чтобы можно было восстановить если закрыли приложение
+    localStorage.setItem('dreameeer_pending_video', JSON.stringify({
+      taskId: activeTaskId,
+      dreamText,
+      imageUrl: imageUrl || null,
+      analysis,
+      savedAt: Date.now(),
+    }));
+
     let attempts = 0;
     const max = 75;
 
@@ -153,10 +171,12 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
           setVideoUrl(data.videoUrl);
           setVideoStatus('done');
           saveToDiary(dreamText, analysis, imageUrl || undefined, data.videoUrl);
+          localStorage.removeItem('dreameeer_pending_video');
           return;
         }
         if (data.status === 'failed') {
           setVideoStatus('failed');
+          localStorage.removeItem('dreameeer_pending_video');
           return;
         }
       } catch {}
@@ -166,6 +186,7 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
         setTimeout(poll, 8000);
       } else {
         setVideoStatus('failed');
+        localStorage.removeItem('dreameeer_pending_video');
       }
     };
 
@@ -394,15 +415,46 @@ export default function AnalysisScreen({ dreamText, analysis, videoTaskId, image
           )}
 
           {videoStatus === 'done' && videoUrl && (
-            <div style={{ borderRadius: '20px', overflow: 'hidden', border: '1px solid var(--border)' }}>
-              <video
-                src={videoUrl}
-                controls
-                autoPlay
-                loop
-                playsInline
-                style={{ width: '100%', display: 'block' }}
-              />
+            <div>
+              <div style={{ borderRadius: '20px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                <video
+                  src={boomerangUrl || videoUrl}
+                  controls
+                  autoPlay
+                  loop
+                  playsInline
+                  style={{ width: '100%', display: 'block' }}
+                />
+              </div>
+              {/* Boomerang button */}
+              {!boomerangUrl && (
+                <button
+                  onClick={async () => {
+                    setBoomerangLoading(true);
+                    try {
+                      const r = await fetch(`${BACKEND_URL}/api/dream/video/boomerang`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ videoUrl }),
+                      });
+                      const d = await r.json();
+                      if (d.videoDataUrl) setBoomerangUrl(d.videoDataUrl);
+                    } catch {}
+                    setBoomerangLoading(false);
+                  }}
+                  disabled={boomerangLoading}
+                  style={{
+                    marginTop: '8px', width: '100%', padding: '12px',
+                    borderRadius: '14px', cursor: boomerangLoading ? 'not-allowed' : 'pointer',
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    color: 'var(--text-dim)', fontSize: '13px', fontWeight: '600',
+                  }}
+                >
+                  {boomerangLoading ? t.boomerangLoading : t.boomerang}
+                  {!boomerangLoading && <span style={{ fontSize: '11px', display: 'block', opacity: 0.6 }}>{t.boomerangSub}</span>}
+                </button>
+              )}
             </div>
           )}
 
