@@ -25,205 +25,137 @@ export default function InstallSlide({ onClose, theme = 'dark' }: Props) {
   };
 
   const iosSteps = [
-    { icon: '1', text: 'Нажми кнопку «Поделиться»', sub: 'значок □↑ внизу Safari' },
-    { icon: '2', text: 'Прокрути список вниз', sub: 'до пункта «На экран «Домой»»' },
-    { icon: '3', text: 'Нажми «Добавить»', sub: 'приложение появится на рабочем столе' },
+    { n: '1', icon: '□↑', text: 'Нажми «Поделиться»', sub: 'кнопка внизу Safari' },
+    { n: '2', icon: '⊞',  text: 'Прокрути и найди «На экран Домой»', sub: 'в середине списка' },
+    { n: '3', icon: '✓',  text: 'Нажми «Добавить»', sub: '' },
   ];
 
   const androidSteps = [
-    { icon: '1', text: 'Нажми ⋮ в Chrome', sub: 'три точки в правом верхнем углу' },
-    { icon: '2', text: '«Добавить на гл. экран»', sub: 'или «Установить приложение»' },
-    { icon: '3', text: 'Нажми «Добавить»', sub: 'приложение появится на рабочем столе' },
+    { n: '1', icon: '⋮',  text: 'Нажми ⋮ в Chrome', sub: 'правый верхний угол' },
+    { n: '2', icon: '⊞',  text: '«Добавить на гл. экран»', sub: 'или «Установить приложение»' },
+    { n: '3', icon: '✓',  text: 'Подтверди «Добавить»', sub: '' },
   ];
 
   const steps = platform === 'ios' ? iosSteps : androidSteps;
   const isDark = theme === 'dark';
 
-  // ── Dark theme: frosted glass ──────────────────────────────
-  const darkSheet: React.CSSProperties = {
+  const glassSheet: React.CSSProperties = {
     width: '100%',
-    background: 'rgba(18, 10, 35, 0.55)',
-    backdropFilter: 'blur(32px) saturate(180%)',
-    WebkitBackdropFilter: 'blur(32px) saturate(180%)',
+    background: isDark
+      ? 'rgba(12, 8, 24, 0.72)'
+      : 'rgba(255, 255, 255, 0.72)',
+    backdropFilter: 'blur(40px) saturate(160%)',
+    WebkitBackdropFilter: 'blur(40px) saturate(160%)',
     borderRadius: '28px 28px 0 0',
-    padding: '28px 24px 48px',
+    padding: '20px 20px 40px',
     transform: visible ? 'translateY(0)' : 'translateY(100%)',
     transition: 'transform 0.4s cubic-bezier(0.32, 0.72, 0, 1)',
-    boxShadow: '0 -1px 0 rgba(255,255,255,0.08), 0 -20px 60px rgba(0,0,0,0.5)',
-    border: '1px solid rgba(255,255,255,0.09)',
+    border: isDark
+      ? '1px solid rgba(255,255,255,0.08)'
+      : '1px solid rgba(0,0,0,0.08)',
     borderBottom: 'none',
+    boxShadow: isDark
+      ? '0 -20px 60px rgba(0,0,0,0.6)'
+      : '0 -20px 60px rgba(0,0,0,0.12)',
   };
 
-  const darkHandle: React.CSSProperties = {
-    background: 'rgba(255,255,255,0.18)',
+  const c = {
+    handle:   isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)',
+    title:    isDark ? '#fff' : '#111',
+    sub:      isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)',
+    stepBg:   isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
+    stepBdr:  isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)',
+    numBg:    isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)',
+    numText:  isDark ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.7)',
+    text:     isDark ? 'rgba(255,255,255,0.88)' : '#111',
+    textSub:  isDark ? 'rgba(255,255,255,0.32)' : 'rgba(0,0,0,0.35)',
+    btnBg:    isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.07)',
+    btnBdr:   isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.1)',
+    btnText:  isDark ? 'rgba(255,255,255,0.75)' : 'rgba(0,0,0,0.55)',
   };
-
-  const darkTitle: React.CSSProperties = { color: '#fff' };
-  const darkSubtitle: React.CSSProperties = { color: 'rgba(255,255,255,0.45)' };
-
-  const darkStep: React.CSSProperties = {
-    background: 'rgba(255,255,255,0.05)',
-    border: '1px solid rgba(255,255,255,0.08)',
-  };
-
-  const darkStepNum: React.CSSProperties = {
-    background: 'rgba(255,255,255,0.12)',
-    color: 'rgba(255,255,255,0.9)',
-  };
-
-  const darkStepText: React.CSSProperties = { color: 'rgba(255,255,255,0.9)' };
-  const darkStepSub: React.CSSProperties = { color: 'rgba(255,255,255,0.35)' };
-
-  const darkTip: React.CSSProperties = {
-    background: 'rgba(255,255,255,0.04)',
-    border: '1px solid rgba(255,255,255,0.08)',
-  };
-
-  const darkTipText: React.CSSProperties = { color: 'rgba(255,255,255,0.45)' };
-
-  const darkBtn: React.CSSProperties = {
-    background: 'rgba(255,255,255,0.1)',
-    border: '1px solid rgba(255,255,255,0.15)',
-    color: 'rgba(255,255,255,0.85)',
-  };
-
-  // ── Light theme: warm dawn ─────────────────────────────────
-  const lightSheet: React.CSSProperties = {
-    width: '100%',
-    background: 'linear-gradient(180deg, #fffaf4 0%, #fff4e8 100%)',
-    borderRadius: '28px 28px 0 0',
-    padding: '28px 24px 48px',
-    transform: visible ? 'translateY(0)' : 'translateY(100%)',
-    transition: 'transform 0.4s cubic-bezier(0.32, 0.72, 0, 1)',
-    boxShadow: '0 -4px 40px rgba(251, 146, 60, 0.15)',
-    border: '1px solid rgba(251, 146, 60, 0.15)',
-    borderBottom: 'none',
-  };
-
-  const lightHandle: React.CSSProperties = { background: 'rgba(0,0,0,0.12)' };
-  const lightTitle: React.CSSProperties = { color: '#1a0a00' };
-  const lightSubtitle: React.CSSProperties = { color: 'rgba(0,0,0,0.4)' };
-
-  const lightStep: React.CSSProperties = {
-    background: 'rgba(251,146,60,0.06)',
-    border: '1px solid rgba(251,146,60,0.15)',
-  };
-
-  const lightStepNum: React.CSSProperties = {
-    background: 'linear-gradient(135deg, #fb923c, #f59e0b)',
-    color: '#fff',
-  };
-
-  const lightStepText: React.CSSProperties = { color: '#1a0a00' };
-  const lightStepSub: React.CSSProperties = { color: 'rgba(0,0,0,0.38)' };
-
-  const lightTip: React.CSSProperties = {
-    background: 'rgba(251,146,60,0.07)',
-    border: '1px solid rgba(251,146,60,0.15)',
-  };
-
-  const lightTipText: React.CSSProperties = { color: 'rgba(0,0,0,0.45)' };
-
-  const lightBtn: React.CSSProperties = {
-    background: 'linear-gradient(135deg, #fb923c, #f59e0b)',
-    border: 'none',
-    color: '#fff',
-  };
-
-  const sheet     = isDark ? darkSheet     : lightSheet;
-  const handle    = isDark ? darkHandle    : lightHandle;
-  const titleSt   = isDark ? darkTitle     : lightTitle;
-  const subtitleSt= isDark ? darkSubtitle  : lightSubtitle;
-  const stepSt    = isDark ? darkStep      : lightStep;
-  const stepNumSt = isDark ? darkStepNum   : lightStepNum;
-  const stepTextSt= isDark ? darkStepText  : lightStepText;
-  const stepSubSt = isDark ? darkStepSub   : lightStepSub;
-  const tipSt     = isDark ? darkTip       : lightTip;
-  const tipTextSt = isDark ? darkTipText   : lightTipText;
-  const btnSt     = isDark ? darkBtn       : lightBtn;
-
-  const overlayBg = isDark
-    ? (visible ? 'rgba(0,0,0,0.65)' : 'rgba(0,0,0,0)')
-    : (visible ? 'rgba(0,0,0,0.25)' : 'rgba(0,0,0,0)');
 
   return (
-    <div style={{
-      position: 'fixed', inset: 0, zIndex: 9999,
-      display: 'flex', alignItems: 'flex-end',
-      background: overlayBg,
-      transition: 'background 0.35s ease',
-      backdropFilter: visible ? 'blur(4px)' : 'none',
-    }} onClick={handleClose}>
-      <div onClick={e => e.stopPropagation()} style={sheet}>
+    <div
+      onClick={handleClose}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 9999,
+        display: 'flex', alignItems: 'flex-end',
+        background: visible
+          ? (isDark ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.2)')
+          : 'rgba(0,0,0,0)',
+        transition: 'background 0.35s ease',
+        backdropFilter: visible ? 'blur(6px)' : 'none',
+        WebkitBackdropFilter: visible ? 'blur(6px)' : 'none',
+      }}
+    >
+      <div onClick={e => e.stopPropagation()} style={glassSheet}>
 
         {/* Handle */}
         <div style={{
-          width: '40px', height: '4px', borderRadius: '2px',
-          margin: '0 auto 24px', ...handle,
+          width: '36px', height: '4px', borderRadius: '2px',
+          margin: '0 auto 20px',
+          background: c.handle,
         }} />
 
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <div style={{ fontSize: '44px', marginBottom: '10px' }}>📲</div>
-          <div style={{ fontSize: '21px', fontWeight: '800', marginBottom: '6px', ...titleSt }}>
+        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+          <div style={{ fontSize: '36px', marginBottom: '8px' }}>📲</div>
+          <div style={{ fontSize: '19px', fontWeight: '700', color: c.title, marginBottom: '4px' }}>
             Добавь на экран домой
           </div>
-          <div style={{ fontSize: '13px', lineHeight: 1.5, ...subtitleSt }}>
-            {platform === 'ios'
-              ? 'Открывай как приложение — без браузера'
-              : 'Установи как приложение за секунду'}
+          <div style={{ fontSize: '13px', color: c.sub }}>
+            {platform === 'ios' ? 'Открывай как приложение без браузера' : 'Установи приложение за секунду'}
           </div>
         </div>
 
         {/* Steps */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '9px', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
           {steps.map(step => (
-            <div key={step.icon} style={{
-              display: 'flex', alignItems: 'center', gap: '13px',
-              borderRadius: '16px', padding: '13px 15px', ...stepSt,
-            }}>
+            <div
+              key={step.n}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '12px',
+                borderRadius: '14px', padding: '12px 14px',
+                background: c.stepBg,
+                border: `1px solid ${c.stepBdr}`,
+              }}
+            >
               <div style={{
-                width: '30px', height: '30px', borderRadius: '50%', flexShrink: 0,
+                width: '28px', height: '28px', borderRadius: '50%', flexShrink: 0,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '13px', fontWeight: '800', ...stepNumSt,
-              }}>{step.icon}</div>
+                fontSize: '12px', fontWeight: '800',
+                background: c.numBg, color: c.numText,
+              }}>
+                {step.n}
+              </div>
               <div>
-                <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '1px', ...stepTextSt }}>
+                <div style={{ fontSize: '14px', fontWeight: '600', color: c.text }}>
                   {step.text}
                 </div>
-                <div style={{ fontSize: '12px', ...stepSubSt }}>
-                  {step.sub}
-                </div>
+                {step.sub && (
+                  <div style={{ fontSize: '11px', color: c.textSub, marginTop: '1px' }}>
+                    {step.sub}
+                  </div>
+                )}
               </div>
             </div>
           ))}
         </div>
 
-        {/* iOS hint */}
-        {platform === 'ios' && (
-          <div style={{
-            borderRadius: '13px', padding: '11px 15px',
-            display: 'flex', alignItems: 'center', gap: '10px',
-            marginBottom: '20px', ...tipSt,
-          }}>
-            <span style={{ fontSize: '18px' }}>💡</span>
-            <span style={{ fontSize: '12px', lineHeight: 1.5, ...tipTextSt }}>
-              Пункт «На экран "Домой"» — в середине списка,{' '}
-              <strong style={isDark ? { color: 'rgba(255,255,255,0.75)' } : { color: '#92400e' }}>
-                прокрути шторку вниз
-              </strong>
-            </span>
-          </div>
-        )}
-
-        {/* Close button */}
-        <button onClick={handleClose} style={{
-          width: '100%', padding: '15px',
-          borderRadius: '16px',
-          fontSize: '15px', fontWeight: '700',
-          cursor: 'pointer', ...btnSt,
-        }}>
-          Понятно, добавлю позже
+        {/* Close */}
+        <button
+          onClick={handleClose}
+          style={{
+            width: '100%', padding: '14px',
+            borderRadius: '14px',
+            fontSize: '14px', fontWeight: '600',
+            cursor: 'pointer',
+            background: c.btnBg,
+            border: `1px solid ${c.btnBdr}`,
+            color: c.btnText,
+          }}
+        >
+          Понятно
         </button>
       </div>
     </div>
