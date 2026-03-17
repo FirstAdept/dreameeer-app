@@ -28,8 +28,10 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selected, setSelected] = useState<Dream | null>(null);
+  const [resetting, setResetting] = useState(false);
 
-  useEffect(() => {
+  const loadData = () => {
+    setLoading(true);
     Promise.all([
       fetch(`${API}/api/admin/dreams?token=${TOKEN}`).then(r => r.json()),
       fetch(`${API}/api/admin/stats?token=${TOKEN}`).then(r => r.json()),
@@ -39,7 +41,24 @@ export default function AdminPage() {
       setStats(statsData);
     }).catch(() => setError('Ошибка соединения с сервером'))
       .finally(() => setLoading(false));
-  }, []);
+  };
+
+  useEffect(() => { loadData(); }, []);
+
+  const handleReset = async () => {
+    if (!confirm('Удалить всех пользователей без подписки и все сны? Это необратимо.')) return;
+    setResetting(true);
+    try {
+      const r = await fetch(`${API}/api/admin/reset?token=${TOKEN}`, { method: 'POST' });
+      const data = await r.json();
+      alert(data.message || 'Готово');
+      loadData();
+    } catch {
+      alert('Ошибка сброса');
+    } finally {
+      setResetting(false);
+    }
+  };
 
   const moodEmoji: Record<string, string> = {
     загадочный: '🔮', мечтательный: '✨', тревожный: '😰',
@@ -87,6 +106,21 @@ export default function AdminPage() {
             <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginTop: '2px' }}>{s.label}</div>
           </div>
         ))}
+      </div>
+
+      {/* Reset button */}
+      <div style={{ marginBottom: '24px' }}>
+        <button
+          onClick={handleReset}
+          disabled={resetting}
+          style={{
+            background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)',
+            borderRadius: '12px', padding: '10px 20px', color: '#f87171',
+            fontSize: '13px', fontWeight: '600', cursor: 'pointer', opacity: resetting ? 0.5 : 1,
+          }}
+        >
+          {resetting ? '⏳ Сбрасываю...' : '🗑️ Сбросить тестовые данные'}
+        </button>
       </div>
 
       {/* Dreams list */}

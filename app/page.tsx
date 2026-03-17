@@ -71,6 +71,7 @@ export default function App() {
   const [showPaywall, setShowPaywall] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [dreamCount, setDreamCount] = useState(0);
+  const [showPromoOnReturn, setShowPromoOnReturn] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -203,6 +204,11 @@ export default function App() {
     setCurrentImageUrl(imageUrl);
     setScreen('analysis');
 
+    // После первого сна — показать промо при возврате на главный экран
+    if (dreamCount === 0 && !isSubscribed) {
+      setShowPromoOnReturn(true);
+    }
+
     // Show install slide immediately after first generation (if not PWA and not shown before)
     const installShown = localStorage.getItem('dreameeer_install_shown');
     const isInPWA = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
@@ -256,7 +262,13 @@ export default function App() {
             analysis={currentAnalysis}
             videoTaskId={currentVideoTaskId}
             imageUrl={currentImageUrl}
-            onBack={() => setScreen('home')}
+            onBack={() => {
+              setScreen('home');
+              if (showPromoOnReturn) {
+                setShowPromoOnReturn(false);
+                setTimeout(() => setShowPaywall(true), 400);
+              }
+            }}
             settings={settings}
             deviceId={deviceId}
             isSubscribed={isSubscribed}
