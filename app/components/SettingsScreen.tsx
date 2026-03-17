@@ -53,6 +53,10 @@ const t = {
     restoring: 'Проверяем...',
     restoreOk: 'Подписка активирована! Перезагрузите страницу.',
     restoreNone: 'Оплаченный платёж не найден',
+    manualHint: 'Введи ID платежа из письма ЮKassa:',
+    manualPlaceholder: 'Например: 2e9a2d5c-000f-5000-9000-...',
+    manualActivate: 'Активировать',
+    manualActivating: 'Проверяем платёж...',
     proPlan: 'PRO',
     proPlanDesc: 'Активна',
     proActive: '✅ У вас активная PRO подписка',
@@ -98,6 +102,10 @@ const t = {
     restoring: 'Checking...',
     restoreOk: 'Subscription activated! Reload the page.',
     restoreNone: 'No paid payment found',
+    manualHint: 'Enter payment ID from YooKassa email:',
+    manualPlaceholder: 'e.g. 2e9a2d5c-000f-5000-9000-...',
+    manualActivate: 'Activate',
+    manualActivating: 'Checking payment...',
     proPlan: 'PRO',
     proPlanDesc: 'Active',
     proActive: '✅ You have an active PRO subscription',
@@ -112,6 +120,9 @@ export default function SettingsScreen({ settings, onSettingsChange, deviceId, i
   const [payError, setPayError] = useState('');
   const [restoring, setRestoring] = useState(false);
   const [restoreMsg, setRestoreMsg] = useState('');
+  const [showManualInput, setShowManualInput] = useState(false);
+  const [manualPaymentId, setManualPaymentId] = useState('');
+  const [manualActivating, setManualActivating] = useState(false);
 
   const set = (patch: Partial<AppSettings>) =>
     onSettingsChange({ ...settings, ...patch });
@@ -172,11 +183,37 @@ export default function SettingsScreen({ settings, onSettingsChange, deviceId, i
         setTimeout(() => window.location.reload(), 1500);
       } else {
         setRestoreMsg(tx.restoreNone);
+        setShowManualInput(true);
       }
     } catch {
       setRestoreMsg(tx.noConnection);
     } finally {
       setRestoring(false);
+    }
+  };
+
+  const handleManualActivate = async () => {
+    if (!manualPaymentId.trim() || !deviceId) return;
+    setManualActivating(true);
+    setRestoreMsg('');
+    try {
+      const res = await fetch(`${API_BASE}/api/payment/check`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deviceId, paymentId: manualPaymentId.trim() }),
+      });
+      const data = await res.json();
+      if (data.activated) {
+        setRestoreMsg(tx.restoreOk);
+        setShowManualInput(false);
+        setTimeout(() => window.location.reload(), 1500);
+      } else {
+        setRestoreMsg(`Статус платежа: ${data.status || 'не найден'}`);
+      }
+    } catch {
+      setRestoreMsg(tx.noConnection);
+    } finally {
+      setManualActivating(false);
     }
   };
 
@@ -448,6 +485,38 @@ export default function SettingsScreen({ settings, onSettingsChange, deviceId, i
                 }}>
                   {restoreMsg}
                 </p>
+              )}
+              {showManualInput && (
+                <div style={{ marginTop: '12px' }}>
+                  <p style={{ fontSize: '12px', color: 'var(--text-dim)', marginBottom: '6px', textAlign: 'center' }}>
+                    {tx.manualHint}
+                  </p>
+                  <input
+                    type="text"
+                    value={manualPaymentId}
+                    onChange={e => setManualPaymentId(e.target.value)}
+                    placeholder={tx.manualPlaceholder}
+                    style={{
+                      width: '100%', padding: '10px 12px', fontSize: '12px',
+                      background: 'var(--card-bg)', border: '1px solid var(--border)',
+                      borderRadius: '10px', color: 'var(--text)', boxSizing: 'border-box',
+                      marginBottom: '8px',
+                    }}
+                  />
+                  <button
+                    onClick={handleManualActivate}
+                    disabled={manualActivating || !manualPaymentId.trim()}
+                    style={{
+                      width: '100%', padding: '11px', fontSize: '13px', fontWeight: '600',
+                      background: manualPaymentId.trim() ? '#7c3aed' : 'var(--card-bg)',
+                      border: 'none', borderRadius: '12px',
+                      color: manualPaymentId.trim() ? '#fff' : 'var(--text-dim)',
+                      cursor: manualActivating || !manualPaymentId.trim() ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    {manualActivating ? tx.manualActivating : tx.manualActivate}
+                  </button>
+                </div>
               )}
             </div>
           )}
