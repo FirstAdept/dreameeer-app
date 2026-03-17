@@ -249,7 +249,7 @@ export default function App() {
       )}
 
       {showInstallSlide && (
-        <InstallSlide onClose={() => setShowInstallSlide(false)} />
+        <InstallSlide onClose={() => setShowInstallSlide(false)} theme={settings.theme} />
       )}
     </div>
   );
