@@ -33,7 +33,7 @@ export default function AdminPage() {
   const loadData = () => {
     setLoading(true);
     Promise.all([
-      fetch(`${API}/api/admin/dreams?token=${TOKEN}`).then(r => r.json()),
+      fetch(`${API}/api/admin/dreams?token=${TOKEN}&limit=200`).then(r => r.json()),
       fetch(`${API}/api/admin/stats?token=${TOKEN}`).then(r => r.json()),
     ]).then(([dreamsData, statsData]) => {
       if (dreamsData.error) { setError(dreamsData.error); return; }
@@ -122,6 +122,30 @@ export default function AdminPage() {
           {resetting ? '⏳ Сбрасываю...' : '🗑️ Сбросить тестовые данные'}
         </button>
       </div>
+
+      {/* Image gallery */}
+      {dreams.filter(d => d.imageUrl).length > 0 && (
+        <div style={{ marginBottom: '32px' }}>
+          <h2 style={{ fontSize: '16px', fontWeight: '700', color: 'rgba(255,255,255,0.6)', marginBottom: '12px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+            🖼 Визуализации ({dreams.filter(d => d.imageUrl).length})
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '10px' }}>
+            {dreams.filter(d => d.imageUrl).map(dream => (
+              <div key={dream._id + '_img'} style={{ borderRadius: '12px', overflow: 'hidden', position: 'relative', cursor: 'pointer' }}
+                onClick={() => setSelected(selected?._id === dream._id ? null : dream)}>
+                <img src={dream.imageUrl!} alt="" style={{ width: '100%', aspectRatio: '1', objectFit: 'cover', display: 'block' }} />
+                <div style={{
+                  position: 'absolute', bottom: 0, left: 0, right: 0,
+                  background: 'linear-gradient(transparent, rgba(0,0,0,0.75))',
+                  padding: '20px 8px 8px', fontSize: '11px', color: '#fff', fontWeight: '600',
+                }}>
+                  {dream.analysis?.dreamTitle || 'Сон'}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Dreams list */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
