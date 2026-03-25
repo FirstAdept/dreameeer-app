@@ -71,14 +71,14 @@ export default function HomeScreen({ onAnalysisComplete, onSubscriptionRequired,
     // Toggle theme at midpoint — when spiral covers screen
     setTimeout(() => {
       onThemeToggle();
-    }, 500);
+    }, 250);
 
     // End animation
     setTimeout(() => {
       setIsAnimating(false);
       setMoonAnim('idle');
       setRippleVisible(false);
-    }, 950);
+    }, 475);
   };
 
   const startRecording = () => {
@@ -182,7 +182,7 @@ export default function HomeScreen({ onAnalysisComplete, onSubscriptionRequired,
           background: isDark
             ? 'conic-gradient(from 0deg, #fff8e1 0deg, #ffe082 90deg, #fff3cd 180deg, #fffde7 270deg, #fff8e1 360deg)'
             : 'conic-gradient(from 0deg, #0d0020 0deg, #3b0764 90deg, #1a0035 180deg, #0a0018 270deg, #0d0020 360deg)',
-          animation: 'spiralUncoil 0.95s cubic-bezier(0.25, 0, 0.25, 1) forwards',
+          animation: 'spiralUncoil 0.475s cubic-bezier(0.25, 0, 0.25, 1) forwards',
           zIndex: 9999,
           pointerEvents: 'none',
           willChange: 'transform, opacity',
