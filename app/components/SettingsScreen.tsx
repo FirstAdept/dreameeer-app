@@ -33,7 +33,7 @@ const t = {
     proTitle: 'Dreameeer PRO',
     proSubtitle: 'Полный доступ ко всем возможностям',
     trialBadge: '1 сон бесплатно',
-    price: '499 ₽',
+    price: '199 ₽',
     pricePeriod: '/ месяц',
     proFeatures: [
       '30 видео-анимаций в месяц',
@@ -83,7 +83,7 @@ const t = {
     proTitle: 'Dreameeer PRO',
     proSubtitle: 'Full access to all features',
     trialBadge: '1 dream free',
-    price: '499 ₽',
+    price: '199 ₽',
     pricePeriod: '/ month',
     proFeatures: [
       '30 video animations per month',
