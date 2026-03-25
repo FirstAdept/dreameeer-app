@@ -42,7 +42,7 @@ export interface DreamRecord {
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
-  theme: 'light',
+  theme: 'dark',
   language: 'ru',
   interpretMode: 'default',
 };

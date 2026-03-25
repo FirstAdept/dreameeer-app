@@ -68,17 +68,17 @@ export default function HomeScreen({ onAnalysisComplete, onSubscriptionRequired,
     setMoonAnim('switching');
     setRippleVisible(true);
 
-    // Toggle theme at midpoint of animation
+    // Toggle theme at midpoint — when spiral covers screen
     setTimeout(() => {
       onThemeToggle();
-    }, 380);
+    }, 500);
 
     // End animation
     setTimeout(() => {
       setIsAnimating(false);
       setMoonAnim('idle');
       setRippleVisible(false);
-    }, 750);
+    }, 950);
   };
 
   const startRecording = () => {
@@ -171,22 +171,21 @@ export default function HomeScreen({ onAnalysisComplete, onSubscriptionRequired,
   return (
     <div className="screen" style={{ padding: '0 20px', paddingTop: '60px' }}>
 
-      {/* Theme ripple overlay */}
+      {/* Theme spiral overlay */}
       {rippleVisible && (
         <div style={{
           position: 'fixed',
-          top: '130px',
+          top: '50%',
           left: '50%',
-          width: '70px',
-          height: '70px',
-          borderRadius: '50%',
+          width: '220vmax',
+          height: '220vmax',
           background: isDark
-            ? 'radial-gradient(circle, rgba(255,240,190,0.97) 0%, rgba(255,220,120,0.92) 100%)'
-            : 'radial-gradient(circle, rgba(20,5,55,0.97) 0%, rgba(60,10,120,0.92) 100%)',
-          transform: 'translate(-50%, -50%)',
-          animation: 'themeRippleDark 0.75s cubic-bezier(0.2, 0, 0.2, 1) forwards',
+            ? 'conic-gradient(from 0deg, #fff8e1 0deg, #ffe082 90deg, #fff3cd 180deg, #fffde7 270deg, #fff8e1 360deg)'
+            : 'conic-gradient(from 0deg, #0d0020 0deg, #3b0764 90deg, #1a0035 180deg, #0a0018 270deg, #0d0020 360deg)',
+          animation: 'spiralUncoil 0.95s cubic-bezier(0.25, 0, 0.25, 1) forwards',
           zIndex: 9999,
           pointerEvents: 'none',
+          willChange: 'transform, opacity',
         }} />
       )}
 

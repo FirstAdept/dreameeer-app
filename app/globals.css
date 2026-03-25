@@ -336,16 +336,27 @@ body {
   50% { transform: translateY(-12px) rotate(3deg); }
 }
 
-@keyframes themeRippleDark {
-  0%   { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
-  65%  { opacity: 1; }
-  100% { transform: translate(-50%, -50%) scale(80); opacity: 0; }
-}
-
-@keyframes themeRippleLight {
-  0%   { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
-  65%  { opacity: 1; }
-  100% { transform: translate(-50%, -50%) scale(80); opacity: 0; }
+@keyframes spiralUncoil {
+  0%   {
+    transform: translate(-50%, -50%) scale(0.04) rotate(-600deg);
+    border-radius: 50%;
+    opacity: 1;
+  }
+  55%  {
+    transform: translate(-50%, -50%) scale(1.0) rotate(-80deg);
+    border-radius: 28%;
+    opacity: 1;
+  }
+  78%  {
+    transform: translate(-50%, -50%) scale(1.35) rotate(0deg);
+    border-radius: 4%;
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.35) rotate(0deg);
+    border-radius: 0%;
+    opacity: 0;
+  }
 }
 
 @keyframes moonToDark {
