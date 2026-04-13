@@ -2,7 +2,7 @@
       "relation": ["delegate_permission/common.handle_all_urls"],
       "target": {
         "namespace": "android_app",
-        "package_name": "app.vercel.dreameeer_app.twa",
-        "sha256_cert_fingerprints": ["31:53:A9:35:33:13:8E:64:6D:3C:73:DF:E9:3E:A4:DF:08:9E:FB:24:4A:23:32:72:70:F1:95:B8:5A:87:4F:FB"]
+        "package_name": "com.dreameeer.app",
+        "sha256_cert_fingerprints": ["B9:1F:16:F1:CA:BA:A5:A1:21:12:6D:7E:F2:13:67:AE:C3:12:F8:E8:83:D7:60:93:04:69:49:DD:BD:AF:E8:7D"]
       }
     }]
